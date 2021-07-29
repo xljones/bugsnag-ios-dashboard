@@ -20,15 +20,19 @@ public struct InboxView: View {
     ]
     
     public var body: some View {
-        VStack() {
+        VStack(alignment: .leading) {
             Text("Project Name")
-                .font(.headline)
-                .frame(alignment: .leading)
+                .font(.title)
+                .padding(.horizontal, 20.0)
+                .padding(.top, 10.0)
+            Divider()
+                .frame(height:1)
+                .background(BSGSecondaryColors.coral)
             List {
                 ForEach (errors, id: \.id) { e in
                     ErrorListItem(error: e)
                 }
-            }
+            }.padding(0)
         }
     }
 }

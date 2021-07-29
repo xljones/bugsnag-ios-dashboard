@@ -24,7 +24,7 @@ struct HeaderView: View {
                 }) {
                     Image(systemName: "line.horizontal.3")
                         .font(.system(size: 30))
-                        .foregroundColor(BSGPrimaryColors.midnight)
+                        .foregroundColor(BSGPrimaryColors.indigo)
                 }
                 Spacer()
                 Image("bugsnag_logo_navy")
@@ -36,14 +36,15 @@ struct HeaderView: View {
                 }) {
                     Image(systemName: "person.crop.circle")
                         .font(.system(size: 30))
-                        .foregroundColor(BSGPrimaryColors.midnight)
+                        .foregroundColor(BSGPrimaryColors.indigo)
                 }
                 Divider()
             }
             .frame(height: 70.0)
             
         }
-        .background(BSGExtendedColors.batman10.edgesIgnoringSafeArea(.top))
+        .background(BSGExtendedColors.batman00.edgesIgnoringSafeArea(.top))
+        // Ignore top safe area to extend the background colour up to the top of screen.
         
         // When Account view is toggled, show this sheet.
         .sheet(isPresented: $showingMyAccountView) {
