@@ -2,26 +2,41 @@
 import SwiftUI
 import PlaygroundSupport
 
-struct Preview: View {
-    init() {
-        
-    }
-    
+let bugsnagDAAToken: String =  "MY_TOKEN"
+
+struct BugsnagTitle: View{
     var body: some View {
         Text("Bugsnag")
+            .padding(25)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .foregroundColor(.white)
+            .background(BSGPrimaryColors.midnight)
+            .font(.title)
+    }
+}
+
+// The core view of the application
+struct CoreView: View {
+    init() { }
+    
+    var body: some View {
+        BugsnagTitle()
         TabView {
-            ErrorsView()
+            InboxView()
                 .tabItem {
-                    Label("Errors", systemImage:"xmark.octagon")
+                    Label("Inbox", systemImage:"xmark.octagon")
                 }
             TimelineView()
                 .tabItem {
-                    Label("Timeline", systemImage:"char.bar.xaxis")
+                    Label("Timeline", systemImage:"chart.bar.xaxis")
+                }
+            MyAccountView()
+                .tabItem {
+                    Label("My Account", systemImage:"person.crop.circle")
                 }
         }
     }
 }
 
-
-
-PlaygroundPage.current.setLiveView(Preview())
+// Display the CoreView() on the Playgrounds Canvas
+PlaygroundPage.current.setLiveView(CoreView())
