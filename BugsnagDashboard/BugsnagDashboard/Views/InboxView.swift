@@ -52,3 +52,9 @@ struct ErrorListItem: View {
         }
     }
 }
+
+struct InboxView_Previews: PreviewProvider {
+    static var previews: some View {
+        InboxView()
+    }
+}

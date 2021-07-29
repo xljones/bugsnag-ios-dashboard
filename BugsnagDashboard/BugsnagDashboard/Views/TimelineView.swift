@@ -16,3 +16,9 @@ public struct TimelineView: View {
         Text("Timeline Goes here")
     }
 }
+
+struct TimelineView_Previews: PreviewProvider {
+    static var previews: some View {
+        TimelineView()
+    }
+}
