@@ -2,29 +2,46 @@
 import SwiftUI
 
 public struct InboxView: View {
-    var errors = [
-        BSGError.init(errorClass: "class1", errorMessage: "msg1", errorContext: "ctx1", userCount: 1, eventCount: 2),
-        BSGError.init(errorClass: "class2", errorMessage: "msg2", errorContext: "ctx2", userCount: 3, eventCount: 4)
-    ]
     public init() { }
+    
+    // Use a temporary static error list for now.
+    var errors: [BSGError] = [
+        BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4)
+    ]
     
     public var body: some View {
         List {
-            Section(header: Text("Today")) {
-                ErrorListItem()
-                ErrorListItem()
+            ForEach (errors, id: \.id) { e in
+                ErrorListItem(error: e)
             }
         }
     }
 }
 
 struct ErrorListItem: View {
-    var error: BSGError = 
-        BSGError.init(errorClass: "My Error Class", errorMessage: "My Error Message", errorContext: "My Error Context", userCount: 345, eventCount: 890)
-    public init() {
-        
-    }
+    var error: BSGError
     public var body: some View {
-        Text(error.errorClass)
+        VStack(alignment: .leading) {
+            HStack {
+                Text(error.errorClass)
+                    .bold()
+                Text(error.errorContext)
+            }
+            Text(error.errorMessage)
+        }
     }
 }
