@@ -13,7 +13,16 @@ public struct TimelineView: View {
     }
     
     public var body: some View {
-        Text("Timeline Goes here")
+        VStack(alignment: .leading) {
+            Text("Project Name")
+                .font(.title)
+                .padding(.horizontal, 20.0)
+                .padding(.top, 10.0)
+            Divider()
+                .frame(height:1)
+                .background(BSGSecondaryColors.coral)
+            Text("Timeline Goes here")
+        }
     }
 }
 
