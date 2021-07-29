@@ -20,29 +20,44 @@ public struct ProjectSelectorView: View {
     }
     
     public var body: some View {
-        Text("Bugsnag Projects")
-            .font(.headline)
-            .padding(20)
-        List {
-            ForEach(projects, id: \.id) { p in
+        VStack(alignment: .leading) {
+            HStack() {
+                Text("Bugsnag Projects")
+                    .font(.title)
                 Button(action: {
-                    print("Project \(p.id) selected")
-                    self.thisView.wrappedValue.dismiss()
+                    print("Refresh project list")
                 }) {
-                    HStack {
-                        Image(systemName: "qrcode")
-                            .foregroundColor(BSGPrimaryColors.indigo)
-                            .imageScale(.large)
-                        Text(p.name)
-                            .foregroundColor(BSGPrimaryColors.midnight)
-                            .font(.subheadline)
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 20))
+                        .foregroundColor(BSGPrimaryColors.indigo)
+                        .frame(alignment:.trailing)
+                }
+                Spacer()
+            }
+            .padding(.horizontal, 20.0)
+            .padding(.top, 20.0)
+            Divider()
+                .frame(height:1)
+                .background(BSGSecondaryColors.coral)
+            List {
+                ForEach(projects, id: \.id) { p in
+                    Button(action: {
+                        print("Project \(p.id) selected")
+                        self.thisView.wrappedValue.dismiss()
+                    }) {
+                        HStack {
+                            Image(systemName: "qrcode")
+                                .foregroundColor(BSGPrimaryColors.indigo)
+                                .imageScale(.large)
+                            Text(p.name)
+                                .foregroundColor(BSGPrimaryColors.midnight)
+                                .font(.subheadline)
+                        }
                     }
                 }
             }
+            .background(BSGExtendedColors.batman00)
         }
-        .padding(0)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(BSGExtendedColors.batman00)
     }
 
 }
