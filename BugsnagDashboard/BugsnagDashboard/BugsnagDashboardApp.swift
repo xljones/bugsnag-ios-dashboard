@@ -7,12 +7,18 @@
 
 import SwiftUI
 
+var myToken: BSGToken = BSGToken.init(token: "")
+var myOrg: BSGOrganization = BSGOrganization.init(id: "", name: "", slug: "")
+
+func initOrganization() {
+    myOrg = getOrganizations(token: myToken)
+}
+
 @main
 struct BugsnagDashboardApp: App {
-    
-    let bugsnagDAAToken: String =  "MY_TOKEN"
-    var organization = BSGOrganization.init(id: "abcdef1234556788", name: "My Org")
-    
+    init() {
+        initOrganization()
+    }
     var body: some Scene {
         WindowGroup {
             ContentView()
