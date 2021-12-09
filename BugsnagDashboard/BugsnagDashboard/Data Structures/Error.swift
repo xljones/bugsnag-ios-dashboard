@@ -6,6 +6,8 @@
 //
 
 import Foundation
+
+// MARK: Error
 public struct BSGError {
     public init(id: String,
                 errorClass: String,
@@ -28,6 +30,7 @@ public struct BSGError {
     var eventCount: Int
 }
 
+// MARK: Event
 public struct BSGEvent {
     public init(id: String,
                 errorClass: String,
