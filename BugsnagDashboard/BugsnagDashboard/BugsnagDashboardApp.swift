@@ -7,11 +7,16 @@
 
 import SwiftUI
 
-var myToken: BSGToken = BSGToken.init(token: "")
-var myOrg: BSGOrganization = BSGOrganization.init(id: "", name: "", slug: "")
+var myToken: BSGToken = BSGToken.init()
+//var myOrganizations: BSGOrganizations = []
 
 func initOrganization() {
-    myOrg = getOrganizations(token: myToken)
+    print("Init: Token is '\(myToken.getToken())'")
+    if myToken.isValid() {
+        print("Init: Getting organizations")
+    } else {
+        print("Init: Can't get organizations, token is invalid")
+    }
 }
 
 @main
