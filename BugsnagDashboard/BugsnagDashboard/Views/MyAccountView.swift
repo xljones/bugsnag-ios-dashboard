@@ -45,12 +45,18 @@ public struct MyAccountView: View {
             HStack() {
                 Button(action: {
                     print("Testing Personal Auth Token")
-                    let tempToken = BSGToken.init(token: token)
-                    myOrg = getOrganizations(token: tempToken)
-                    print(myOrg)
+                    let tempToken: BSGToken = BSGToken.init(token: token)
+                    getOrganizations(token: tempToken) {
+                        switch $0 {
+                        case .success(let orgs):
+                            print(orgs)
+                        case let .failure(error):
+                            print(error)
+                        }
+                    }
                 }) {
                     HStack {
-                        Image(systemName: "pencil")
+                        Image(systemName: "pencil.circle")
                         Text("Test")
                     }
                     .padding()
