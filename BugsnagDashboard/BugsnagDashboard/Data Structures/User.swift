@@ -10,13 +10,20 @@ import Foundation
 // MARK: Token
 public class BSGToken {
     private var token: String
+    let tokenKey = "BUGSNAG_DAA_TOKEN"
+    let defaults = UserDefaults.standard
     
-    public init(token: String) {
-        self.token = token
+    public init(token: String? = nil) {
+        if token != nil {
+            self.token = token!
+        } else {
+            self.token = defaults.object(forKey: tokenKey) as? String ?? ""
+        }
     }
     
     public func setToken(token: String) {
         self.token = token
+        defaults.set(token, forKey: tokenKey)
     }
     
     public func getToken() -> String {
