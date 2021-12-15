@@ -13,10 +13,10 @@ public struct InboxView: View {
     
     // Use a temporary static error list for now.
     var errors: [BSGError] = [
-        BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
-        BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
-        BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
-        BSGError.init(id: UUID().uuidString, errorClass: "__SwiftNativeError", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4)
+        //BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
+        //BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
+        //BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
+        //BSGError.init(id: UUID().uuidString, errorClass: "__SwiftNativeError", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4)
     ]
     
     public var body: some View {
@@ -44,9 +44,9 @@ struct ErrorListItem: View {
             HStack {
                 Text(error.errorClass)
                     .bold()
-                Text(error.errorContext)
+                Text(error.context)
             }
-            Text(error.errorMessage)
+            Text(error.message)
                 .foregroundColor(BSGExtendedColors.batman30)
         }
     }
