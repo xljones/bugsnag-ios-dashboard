@@ -1,5 +1,5 @@
 //
-//  User.swift
+//  StructUser.swift
 //  BugsnagDashboard
 //
 //  Created by Xander Jones on 09/12/2021.
@@ -10,7 +10,7 @@ import Foundation
 // MARK: Token
 public class BSGToken {
     private var token: String
-    let tokenKey = "BUGSNAG_DAA_TOKEN"
+    var tokenKey = "BUGSNAG_DAA_TOKEN"
     let defaults = UserDefaults.standard
     
     public init(token: String? = nil) {
@@ -39,26 +39,19 @@ public class BSGToken {
     }
 }
 
-
 // MARK: User
-struct BSGUser: Codable {
-    let id, name, email: String
-    let twoFactorEnabled: Bool
-    let twoFactorEnabledOn, passwordUpdatedOn: String
-    let showTimeInUTC, heroku: Bool
-    let recoveryCodesRemaining: Int
-    let createdAt: String
-    let favoriteProjectIDS: [String]
-
-    enum CodingKeys: String, CodingKey {
-        case id, name, email
-        case twoFactorEnabled = "two_factor_enabled"
-        case twoFactorEnabledOn = "two_factor_enabled_on"
-        case passwordUpdatedOn = "password_updated_on"
-        case showTimeInUTC = "show_time_in_utc"
-        case heroku
-        case recoveryCodesRemaining = "recovery_codes_remaining"
-        case createdAt = "created_at"
-        case favoriteProjectIDS = "favorite_project_ids"
+public struct BSGUser: Codable {
+    var id, name, email: String
+    var twoFactorEnabled: Bool?
+    var twoFactorEnabledOn, passwordUpdatedOn: String?
+    var showTimeInUTC, heroku: Bool?
+    var recoveryCodesRemaining: Int?
+    var createdAt: String?
+    var favoriteProjectIDS: [String]?
+    
+    init() {
+        self.id = ""
+        self.name = ""
+        self.email = ""
     }
 }
