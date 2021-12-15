@@ -11,21 +11,32 @@ import SwiftUI
 public struct ProjectSelectorView: View {
     @Environment(\.presentationMode) var thisView
     
-    var projects = [
-        BSGProject.init(id: UUID().uuidString, name: "Android", type: "android"),
-        BSGProject.init(id: UUID().uuidString, name: "iOS", type: "ios")
-    ]
+    @State private var ps: [BSGProject] = myProjects
     
     public init() {
+
     }
     
     public var body: some View {
         VStack(alignment: .leading) {
             HStack() {
-                Text("Bugsnag Projects")
+                Text("Projects")
                     .font(.title)
                 Button(action: {
                     print("Refresh project list")
+                    if (myOrganization != nil) {
+                        getProjects(token: myToken, organization: myOrganization!) {
+                            switch $0 {
+                            case let .success(projects):
+                                ps = projects
+                                print("getProjects Success")
+                            case let .failure(error):
+                                print("getProjects Failed: \(error)")
+                            }
+                        }
+                    } else {
+                        print("Can't referesh projects, myOrganization is nil")
+                    }
                 }) {
                     Image(systemName: "arrow.clockwise")
                         .font(.system(size: 20))
@@ -36,11 +47,8 @@ public struct ProjectSelectorView: View {
             }
             .padding(.horizontal, 20.0)
             .padding(.top, 20.0)
-            Divider()
-                .frame(height:1)
-                .background(BSGSecondaryColors.coral)
             List {
-                ForEach(projects, id: \.id) { p in
+                ForEach(ps, id: \.id) { p in
                     Button(action: {
                         print("Project \(p.id) selected")
                         self.thisView.wrappedValue.dismiss()
