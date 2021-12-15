@@ -12,20 +12,37 @@ public struct MyAccountView: View {
     @Environment(\.presentationMode) var thisView
     @Environment(\.openURL) var openURL
     
-    @State private var token: String = myToken.getToken()
-    @State private var showUserOrganizationView = false
+    var previousToken = myToken.getToken()
     
-    @State private var user_name: String = ""
-    @State private var user_id: String = ""
-    @State private var user_email: String = ""
+    // MARK: Present @State values used for live values that can be manipulated and auto show up on UI
+    @State var testToken: String = myToken.getToken()
+    @State var showUserOrganizationView: Bool
+    @State var testUser: BSGUser
+    @State var testOrganization: BSGOrganization
     
-    @State private var org_name: String = ""
-    @State private var org_id: String = ""
-    @State private var org_slug: String = ""
-    
-    public init() {
+    private enum BSGTokenTestState {
+        case CHANGED_AND_UNTESTED
+        case CHANGED_AND_TESTED
+        case UNCHANGED
     }
-       
+    
+    /// This needs to be @State because it's in a Struct which is otherwise immutable.
+    @State private var tokenTestState: BSGTokenTestState = .UNCHANGED
+    
+    init() {
+        if myUser != nil && myOrganization != nil {
+            print("myUser & myOrganization are populated")
+            _showUserOrganizationView = State(initialValue: true)
+            _testUser = State(initialValue: myUser!)
+            _testOrganization = State(initialValue: myOrganization!)
+        } else {
+            print("myUser is empty")
+            _showUserOrganizationView = State(initialValue: false)
+            _testUser = State(initialValue: BSGUser.init())
+            _testOrganization = State(initialValue: BSGOrganization.init())
+        }
+    }
+           
     public var body: some View {
         VStack(alignment: .leading) {
                 Text("My Account")
@@ -47,7 +64,7 @@ public struct MyAccountView: View {
                 HStack() {
                     Image(systemName: "key")
                         .foregroundColor(BSGExtendedColors.batman30)
-                    TextField("Authentication token...", text: $token)
+                    TextField("Authentication token...", text: $testToken)
                 }
             Divider()
             Group {
@@ -55,45 +72,49 @@ public struct MyAccountView: View {
                     .font(.headline)
                 HStack() {
                     Text("Name").bold()
-                    Text(")
+                    Text(testUser.name)
                 }
                 HStack() {
                     Text("ID").bold()
-                    Text("placeholder")
+                    Text(testUser.id)
                 }
                 HStack() {
                     Text("Email").bold()
-                    Text("placeholder")
+                    Text(testUser.email)
                 }
                 Divider()
                 Text("Organization")
                     .font(.headline)
                 HStack() {
                     Text("Name").bold()
-                    Text("placeholder")
+                    Text(testOrganization.name)
                 }
                 HStack() {
                     Text("ID").bold()
-                    Text("placeholder")
+                    Text(testOrganization.id)
                 }
                 HStack() {
                     Text("Slug").bold()
-                    Text("placeholder")
+                    Text(testOrganization.slug)
                 }
-            }.opacity(showUserOrganizationView ? 1.0 : 0.0)
+            }.opacity(showUserOrganizationView ? 1.0 : 0.1)
             Group {
                 Spacer()
                 HStack() {
                     Button(action: {
                         print("Testing Personal Auth Token")
-                        let tempToken: BSGToken = BSGToken.init(token: token)
-                        getOrganizations(token: tempToken) {
-                            switch $0 {
-                            case .success(let orgs):
-                                print("Success")
+                        /// reset these objects to nil so failures are more obvious
+                        testUser = BSGUser.init()
+                        testOrganization = BSGOrganization.init()
+                        tokenTestState = .CHANGED_AND_UNTESTED
+                        getUserAndOrganization(testToken: BSGToken.init(token: testToken)) { rtnUser, rtnOrganization in
+                            if rtnUser != nil && rtnOrganization != nil {
+                                testUser = rtnUser!
+                                testOrganization = rtnOrganization!
+                                tokenTestState = .CHANGED_AND_TESTED
                                 showUserOrganizationView = true
-                            case let .failure(error):
-                                print("Failed")
+                            } else {
+                                tokenTestState = .CHANGED_AND_UNTESTED
                                 showUserOrganizationView = false
                             }
                         }
@@ -106,13 +127,38 @@ public struct MyAccountView: View {
                         .frame(maxWidth:.infinity)
                         .background(BSGPrimaryColors.midnight)
                         .foregroundColor(Color.white)
-                        .cornerRadius(15)
+                        .cornerRadius(10)
                     }
                     
                     Button(action: {
-                        print("Saving new Personal Auth Token")
-                        myToken.setToken(token: token)
-                        self.thisView.wrappedValue.dismiss()
+                        if (testToken != previousToken || myOrganization == nil || myUser == nil) {
+                            tokenTestState = .CHANGED_AND_UNTESTED
+                        }
+                        switch(tokenTestState) {
+                        case .UNCHANGED:
+                            print("Save: Not saving token as unchanged")
+                            self.thisView.wrappedValue.dismiss()
+                        case .CHANGED_AND_TESTED:
+                            print("Save: Changing, token was tested so no further testing")
+                            myToken.setToken(token: testToken)
+                            myUser = testUser
+                            myOrganization = testOrganization
+                            self.thisView.wrappedValue.dismiss()
+                        case .CHANGED_AND_UNTESTED:
+                            print("Save: Performing test before saving")
+                            getUserAndOrganization(testToken: BSGToken.init(token: testToken)) { rtnUser, rtnOrganization in
+                                if rtnUser != nil && rtnOrganization != nil {
+                                    myUser = rtnUser!
+                                    myOrganization = rtnOrganization!
+                                    print("Save: --> Test passed")
+                                    self.thisView.wrappedValue.dismiss()
+                                } else {
+                                    print("Save: --> Test failed")
+                                    tokenTestState = .CHANGED_AND_UNTESTED
+                                    showUserOrganizationView = false
+                                }
+                            }
+                        }
                     }) {
                         HStack() {
                             Image(systemName: "externaldrive.badge.checkmark")
