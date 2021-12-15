@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+public var myToken = BSGToken.init()
+public var myUser: BSGUser?
+public var myOrganization: BSGOrganization?
+public var myProjects: [BSGProject] = []
+
 // Title View contains the title text, project context menu button and account context menu button
 struct HeaderView: View {
     @State private var showingMyAccountView: Bool = false
