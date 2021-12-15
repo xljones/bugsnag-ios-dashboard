@@ -13,7 +13,7 @@ public struct BSGProject: Codable {
     let apiKey, type: String
     let isFullView: Bool
     let releaseStages: [String]
-    let language: String
+    let language: String?
     let createdAt, updatedAt: String
     let errorsURL, eventsURL, url, htmlURL: String
     let openErrorCount, forReviewErrorCount, collaboratorsCount: Int
