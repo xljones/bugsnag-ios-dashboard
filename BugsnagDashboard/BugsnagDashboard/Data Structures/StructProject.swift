@@ -22,5 +22,34 @@ public struct BSGProject: Codable {
     let resolveOnDeploy: Bool
     let urlWhitelist: [String]?
     let ignoreOldBrowsers: Bool?
-    let ignoredBrowserVersions: [String]?
+    
+    // MARK: These CodingKeys allow translation between what we want to call the key, and what the API calls the key.
+    //       Some have the same name, e.g. `id`.
+    enum CodingKeys: String, CodingKey {
+        case id
+        case organizationID = "organization_id"
+        case slug, name
+        case apiKey = "api_key"
+        case type
+        case isFullView = "is_full_view"
+        case releaseStages = "release_stages"
+        case language
+        case createdAt = "created_at"
+        case updatedAt = "updated_at"
+        case errorsURL = "errors_url"
+        case eventsURL = "events_url"
+        case url
+        case htmlURL = "html_url"
+        case openErrorCount = "open_error_count"
+        case forReviewErrorCount = "for_review_error_count"
+        case collaboratorsCount = "collaborators_count"
+        case globalGrouping = "global_grouping"
+        case locationGrouping = "location_grouping"
+        case discardedAppVersions = "discarded_app_versions"
+        case discardedErrors = "discarded_errors"
+        case customEventFieldsUsed = "custom_event_fields_used"
+        case resolveOnDeploy = "resolve_on_deploy"
+        case urlWhitelist = "url_whitelist"
+        case ignoreOldBrowsers = "ignore_old_browsers"
+    }
 }
