@@ -1,5 +1,5 @@
 //
-//  Organizations.swift
+//  APIOrganizations.swift
 //  BugsnagDashboard
 //
 //  Created by Xander Jones on 29/07/2021.
@@ -7,7 +7,8 @@
 
 import Foundation
 
-public func getOrganizations(token: BSGToken, completionHandler: @escaping (Result<[BSGOrganization], Error>) -> Void) {
+public func getOrganizations(token: BSGToken,
+                             completionHandler: @escaping (Result<[BSGOrganization], Error>) -> Void) {
     var request = URLRequest(url: URL(string: "https://api.bugsnag.com/user/organizations")!)
     request.httpMethod = "GET"
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
