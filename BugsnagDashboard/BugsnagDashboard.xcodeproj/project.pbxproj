@@ -11,6 +11,8 @@
 		370DE8FC26B2FB9D0015D602 /* ProjectSelectorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370DE8FB26B2FB9D0015D602 /* ProjectSelectorView.swift */; };
 		370DE8FE26B300520015D602 /* OverviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370DE8FD26B300520015D602 /* OverviewView.swift */; };
 		370DE90026B3011A0015D602 /* ReleasesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 370DE8FF26B3011A0015D602 /* ReleasesView.swift */; };
+		37203EC9276B7934004A6D9C /* StructReleases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37203EC8276B7934004A6D9C /* StructReleases.swift */; };
+		37203ECB276B7CC1004A6D9C /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37203ECA276B7CC1004A6D9C /* APIErrors.swift */; };
 		376A7C10276A04590093712E /* APIUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376A7C0F276A04590093712E /* APIUser.swift */; };
 		376A7C16276A12E40093712E /* APIProjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376A7C15276A12E40093712E /* APIProjects.swift */; };
 		376A7C18276A13590093712E /* StructProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376A7C17276A13590093712E /* StructProject.swift */; };
@@ -31,6 +33,8 @@
 		370DE8FB26B2FB9D0015D602 /* ProjectSelectorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectSelectorView.swift; sourceTree = "<group>"; };
 		370DE8FD26B300520015D602 /* OverviewView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverviewView.swift; sourceTree = "<group>"; };
 		370DE8FF26B3011A0015D602 /* ReleasesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReleasesView.swift; sourceTree = "<group>"; };
+		37203EC8276B7934004A6D9C /* StructReleases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructReleases.swift; sourceTree = "<group>"; };
+		37203ECA276B7CC1004A6D9C /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		376A7C0F276A04590093712E /* APIUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIUser.swift; sourceTree = "<group>"; };
 		376A7C15276A12E40093712E /* APIProjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIProjects.swift; sourceTree = "<group>"; };
 		376A7C17276A13590093712E /* StructProject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructProject.swift; sourceTree = "<group>"; };
@@ -64,6 +68,7 @@
 			children = (
 				376A7C0F276A04590093712E /* APIUser.swift */,
 				376A7C15276A12E40093712E /* APIProjects.swift */,
+				37203ECA276B7CC1004A6D9C /* APIErrors.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -136,6 +141,7 @@
 				3799CC0E26B2F16B005ACCFD /* StructError.swift */,
 				370D0E7D27621B5C00862451 /* StructUser.swift */,
 				376A7C17276A13590093712E /* StructProject.swift */,
+				37203EC8276B7934004A6D9C /* StructReleases.swift */,
 			);
 			path = "Data Structures";
 			sourceTree = "<group>";
@@ -217,6 +223,7 @@
 				3799CC1126B2F1C3005ACCFD /* InboxView.swift in Sources */,
 				376A7C10276A04590093712E /* APIUser.swift in Sources */,
 				3799CC0A26B2F106005ACCFD /* Colors.swift in Sources */,
+				37203EC9276B7934004A6D9C /* StructReleases.swift in Sources */,
 				376A7C18276A13590093712E /* StructProject.swift in Sources */,
 				3799CC1526B2F201005ACCFD /* MyAccountView.swift in Sources */,
 				3799CC0D26B2F148005ACCFD /* StructOrganization.swift in Sources */,
@@ -224,6 +231,7 @@
 				370DE90026B3011A0015D602 /* ReleasesView.swift in Sources */,
 				3799CBF826B2F0A3005ACCFD /* BugsnagDashboardApp.swift in Sources */,
 				376A7C16276A12E40093712E /* APIProjects.swift in Sources */,
+				37203ECB276B7CC1004A6D9C /* APIErrors.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -356,7 +364,7 @@
 				DEVELOPMENT_TEAM = 5C85ZH3WR5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = BugsnagDashboard/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -378,7 +386,7 @@
 				DEVELOPMENT_TEAM = 5C85ZH3WR5;
 				ENABLE_PREVIEWS = YES;
 				INFOPLIST_FILE = BugsnagDashboard/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
