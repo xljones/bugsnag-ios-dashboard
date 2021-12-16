@@ -10,7 +10,7 @@ import Foundation
 // MARK: - BSGOrganization
 public struct BSGOrganization: Codable {
     let id, name, slug: String
-    let creator: BSGOrganizationCreator
+    let creator: BSGOrganizationCreator?
     let collaboratorsURL, projectsURL: String
     let createdAt, updatedAt: String
     let autoUpgrade: Bool
