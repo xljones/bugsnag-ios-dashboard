@@ -10,55 +10,20 @@ import SwiftUI
 
 public struct ProjectSelectorView: View {
     @Environment(\.presentationMode) var thisView
-    
-    @State private var noOrganizationShow: Bool
+
     @Binding var myProjects: [BSGProject]?
     @Binding var activeProject: ActiveProject?
     
     public init(myProjects: Binding<[BSGProject]?>, activeProject: Binding<ActiveProject?>) {
         _myProjects = myProjects
         _activeProject = activeProject
-        _noOrganizationShow = State(initialValue: myOrganization == nil ? true : false)
     }
     
     public var body: some View {
         VStack(alignment: .leading) {
-            HStack() {
-                Text("Projects")
-                    .font(.title)
-                Button(action: {
-                    print("Refresh project list")
-                    if let organization = myOrganization {
-                        getProjects(token: myToken, organization: organization) {
-                            switch $0 {
-                            case let .success(rtnProjects):
-                                noOrganizationShow = false
-                                myProjects = rtnProjects
-                                print("getProjects Success")
-                            case let .failure(error):
-                                print("getProjects Failed: \(error)")
-                            }
-                        }
-                    } else {
-                        noOrganizationShow = true
-                        print("Can't referesh projects, myOrganization is nil")
-                    }
-                }) {
-                    Image(systemName: "arrow.clockwise")
-                        .font(.system(size: 20))
-                        .foregroundColor(BSGPrimaryColors.indigo)
-                        .frame(alignment:.trailing)
-                }
-                Spacer()
-            }
-            .padding(20)
-            if noOrganizationShow {
-                Text("No organization is set.")
-                    .padding(20)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .foregroundColor(BSGExtendedColors.batman40)
-                    .background(BSGExtendedColors.batman00)
-            }
+            Text("Projects")
+                .font(.title)
+                .padding(20)
             List {
                 if let projects = myProjects {
                     ForEach(Array(projects.enumerated()), id: \.offset) { index, project in
@@ -77,8 +42,34 @@ public struct ProjectSelectorView: View {
                             }
                         }
                     }
+                } else if myOrganization == nil {
+                    Text("No organization is set.")
+                        .foregroundColor(BSGExtendedColors.batman40)
+                } else {
+                    Text("No projects in organization \(myOrganization!.name).")
                 }
-            }.background(BSGExtendedColors.batman00)
+            }
+            .background(BSGExtendedColors.batman00)
+            .refreshable {
+                print("Projects: Refresh project list")
+                if let organization = myOrganization {
+                    getProjects(token: myToken, organization: organization) {
+                        switch $0 {
+                        case let .success(rtnProjects):
+                            myProjects = rtnProjects
+                            print("getProjects Success")
+                        case let .failure(error):
+                            print("getProjects Failed: \(error)")
+                        }
+                    }
+                } else {
+                    print("Can't referesh projects, myOrganization is nil")
+                }
+            }
+            Text("Pull to refresh")
+                .foregroundColor(BSGExtendedColors.batman20)
+                .font(.system(size: 10))
+                .frame(maxWidth: .infinity, alignment: .center)
         }
         .onAppear {
             if let organization = myOrganization {
@@ -86,7 +77,6 @@ public struct ProjectSelectorView: View {
                     getProjects(token: myToken, organization: organization) {
                         switch $0 {
                         case let .success(rtnProjects):
-                            noOrganizationShow = false
                             myProjects = rtnProjects
                             print("getProjects Success (on init)")
                         case let .failure(error):
