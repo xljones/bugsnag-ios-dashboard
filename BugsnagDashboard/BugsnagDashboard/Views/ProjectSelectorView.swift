@@ -52,6 +52,7 @@ public struct ProjectSelectorView: View {
                         .foregroundColor(BSGExtendedColors.batman40)
                 } else {
                     Text("No projects in organization \(myOrganization!.name).")
+                        .foregroundColor(BSGExtendedColors.batman40)
                 }
             }
             .background(BSGExtendedColors.batman00)
