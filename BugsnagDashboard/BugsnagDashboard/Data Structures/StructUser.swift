@@ -41,13 +41,13 @@ public class BSGToken {
 
 // MARK: - BSGUser
 public struct BSGUser: Codable {
-    var id, name, email: String
-    var twoFactorEnabled: Bool?
-    var twoFactorEnabledOn, passwordUpdatedOn: String?
-    var showTimeInUTC, heroku: Bool?
-    var recoveryCodesRemaining: Int?
-    var createdAt: String?
-    var favoriteProjectIDS: [String]?
+    let id, name, email: String
+    let twoFactorEnabled: Bool
+    let twoFactorEnabledOn, passwordUpdatedOn: String
+    let showTimeInUTC, heroku: Bool
+    let recoveryCodesRemaining: Int
+    let createdAt: String
+    let favoriteProjectIDS: [String]
 
     enum CodingKeys: String, CodingKey {
         case id, name, email
@@ -59,11 +59,5 @@ public struct BSGUser: Codable {
         case recoveryCodesRemaining = "recovery_codes_remaining"
         case createdAt = "created_at"
         case favoriteProjectIDS = "favorite_project_ids"
-    }
-    
-    init() {
-        self.id = ""
-        self.name = ""
-        self.email = ""
     }
 }
