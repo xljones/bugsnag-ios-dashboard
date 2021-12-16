@@ -53,3 +53,46 @@ public struct BSGProject: Codable {
         case ignoreOldBrowsers = "ignore_old_browsers"
     }
 }
+
+// MARK: - ActiveProject
+public struct ActiveProject {
+    var index: Int
+    var details: BSGProject
+}
+
+// MARK: - BSGProjectOverview
+public struct BSGProjectOverview: Codable {
+    let projectID: String
+    let forReview: BSGProjectOverviewForReview
+    let latestRelease: BSGProjectOverviewLatestRelease?
+
+    enum CodingKeys: String, CodingKey {
+        case projectID = "project_id"
+        case forReview = "for_review"
+        case latestRelease = "latest_release"
+    }
+}
+
+// MARK: - BSGProjectOverviewForReview
+struct BSGProjectOverviewForReview: Codable {
+    let oneWeekAgo: Int
+    let current: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case oneWeekAgo = "one_week_ago"
+        case current
+    }
+}
+
+// MARK: - BSGProjectOverviewLatestRelease
+struct BSGProjectOverviewLatestRelease: Codable {
+    let releaseGroupId: String
+    let appVersion: String
+    let firstReleaseTime: String
+    
+    enum CodingKeys: String, CodingKey {
+        case releaseGroupId = "release_group_id"
+        case appVersion = "app_version"
+        case firstReleaseTime = "first_release_time"
+    }
+}
