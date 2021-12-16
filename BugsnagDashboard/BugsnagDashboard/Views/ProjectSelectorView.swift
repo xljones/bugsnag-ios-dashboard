@@ -11,18 +11,23 @@ import SwiftUI
 public struct ProjectSelectorView: View {
     @Environment(\.presentationMode) var thisView
 
-    @Binding var myProjects: [BSGProject]?
-    @Binding var activeProject: ActiveProject?
+    @Binding private var myProjects: [BSGProject]?
+    @Binding private var myOrganization: BSGOrganization?
+    @Binding private var activeProject: ActiveProject?
     
-    public init(myProjects: Binding<[BSGProject]?>, activeProject: Binding<ActiveProject?>) {
+    public init(myProjects: Binding<[BSGProject]?>,
+                myOrganization: Binding<BSGOrganization?>,
+                activeProject: Binding<ActiveProject?>) {
         _myProjects = myProjects
+        _myOrganization = myOrganization
         _activeProject = activeProject
     }
     
     public var body: some View {
-        VStack(alignment: .leading) {
+        VStack(alignment: .leading, spacing: 0) {
             Text("Projects")
                 .font(.title)
+                .frame(width: .infinity, alignment: .leading)
                 .padding(20)
             List {
                 if let projects = myProjects {
@@ -92,8 +97,9 @@ public struct ProjectSelectorView: View {
 struct ProjectSelectorView_Previews: PreviewProvider {
     // MARK: Must use statics in Previews: https://stackoverflow.com/questions/61753114/instance-member-cannot-be-used-on-type-in-swiftui-preview
     @State static var testProjects: [BSGProject]?
+    @State static var testOrganization: BSGOrganization?
     @State static var testActiveProject: ActiveProject?
     static var previews: some View {
-        ProjectSelectorView(myProjects: $testProjects, activeProject: $testActiveProject)
+        ProjectSelectorView(myProjects: $testProjects, myOrganization: $testOrganization, activeProject: $testActiveProject)
     }
 }
