@@ -8,7 +8,7 @@
 import Foundation
 
 // MARK: - Get User and related Organization
-func getUserAndOrganization(testToken: BSGToken,
+func getUserAndOrganization(token: BSGToken,
                             callback: @escaping (_ rtnUser: BSGUser?, _ rtnOrganization: BSGOrganization?) -> Void) {
     
     var testUser: BSGUser?
@@ -17,7 +17,7 @@ func getUserAndOrganization(testToken: BSGToken,
     let group = DispatchGroup()
 
     group.enter()
-    getUser(token: testToken) {
+    getUser(token: token) {
         switch $0 {
         case let .success(user):
             testUser = user
@@ -29,7 +29,7 @@ func getUserAndOrganization(testToken: BSGToken,
     }
     
     group.enter()
-    getOrganizations(token: testToken) {
+    getOrganizations(token: token) {
         switch $0 {
         case let .success(orgs):
             testOrganization = orgs[0]
