@@ -20,7 +20,7 @@ public struct BSGError: Codable {
     let status: String
     // let createdIssue: BSGErrorLinkedIssues // Ignore this fields, it's duplicared by `linkedIssues`
     let linkedIssues: [BSGErrorLinkedIssues]
-    let reopenRules: BSGErrorReopenRules
+    let reopenRules: BSGErrorReopenRules?
     let assignedCollaboratorID: String?
     let commentCount: Int
     let missingDsyms: [String]?
