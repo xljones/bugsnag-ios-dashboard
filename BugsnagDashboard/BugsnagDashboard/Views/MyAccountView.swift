@@ -12,13 +12,14 @@ public struct MyAccountView: View {
     @Environment(\.presentationMode) var thisView
     @Environment(\.openURL) var openURL
     
-    var previousToken = myToken.getToken()
+    @Binding private var myUser: BSGUser?
+    @Binding private var myOrganization: BSGOrganization?
     
-    // MARK: Present @State values used for live values that can be manipulated and auto show up on UI
-    @State var testToken: String = myToken.getToken()
-    @State var showUserOrganizationView: Bool
-    @State var testUser: BSGUser
-    @State var testOrganization: BSGOrganization
+    private var previousToken = myToken.getToken()
+    @State private var testToken: String = myToken.getToken()
+    @State private var tokenTestState: BSGTokenTestState = .UNCHANGED /// This needs to be @State because it's in a Struct which is otherwise immutable.
+    @State private var testUser: BSGUser?
+    @State private var testOrganization: BSGOrganization?
     
     private enum BSGTokenTestState {
         case CHANGED_AND_UNTESTED
@@ -26,32 +27,22 @@ public struct MyAccountView: View {
         case UNCHANGED
     }
     
-    /// This needs to be @State because it's in a Struct which is otherwise immutable.
-    @State private var tokenTestState: BSGTokenTestState = .UNCHANGED
-    
-    init() {
-        if let user = myUser, let organization = myOrganization {
-            print("myUser & myOrganization are populated")
-            _showUserOrganizationView = State(initialValue: true)
-            _testUser = State(initialValue: user)
-            _testOrganization = State(initialValue: organization)
-        } else {
-            print("myUser is empty")
-            _showUserOrganizationView = State(initialValue: false)
-            _testUser = State(initialValue: BSGUser.init())
-            _testOrganization = State(initialValue: BSGOrganization.init())
-        }
+    init(myUser: Binding<BSGUser?>,
+         myOrganization: Binding<BSGOrganization?>) {
+        _myUser = myUser
+        _myOrganization = myOrganization
     }
            
     public var body: some View {
-        VStack(alignment: .leading) {
-                Text("My Account")
-                    .font(.title)
-                Divider()
+        VStack(alignment: .leading, spacing: 0) {
+            Text("My Account")
+                .font(.title)
+                .padding(20)
+            Divider()
+            VStack(alignment: .leading) {
                 HStack() {
                     Text("Personal Authentication Token")
                     Button(action: {
-                        print("Show help on PAT")
                         openURL(URL(string:"https://bugsnagapiv2.docs.apiary.io/#introduction/authentication")!)
                     }) {
                         Image(systemName: "questionmark.circle")
@@ -60,62 +51,75 @@ public struct MyAccountView: View {
                 }
                 Text("This is your authentication token generated through app.bugnsag.com")
                     .foregroundColor(BSGExtendedColors.batman30)
-                    .font(.system(size: 12))
+                    .font(.system(size: 10))
                 HStack() {
                     Image(systemName: "key")
                         .foregroundColor(BSGExtendedColors.batman30)
                     TextField("Authentication token...", text: $testToken)
                 }
-            Divider()
-            Group {
-                Text("User")
-                    .font(.headline)
-                HStack() {
-                    Text("Name").bold()
-                    Text(testUser.name)
-                }
-                HStack() {
-                    Text("ID").bold()
-                    Text(testUser.id)
-                }
-                HStack() {
-                    Text("Email").bold()
-                    Text(testUser.email)
-                }
                 Divider()
-                Text("Organization")
-                    .font(.headline)
-                HStack() {
-                    Text("Name").bold()
-                    Text(testOrganization.name)
+            }.padding(20)
+            
+            List {
+                Section(header: Text("User")) {
+                    if let user = testUser {
+                        VStack(alignment: .leading) {
+                            Text("name").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text(user.name)
+                        }
+                        VStack(alignment: .leading) {
+                            Text("email").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text(user.email)
+                        }
+                        VStack(alignment: .leading) {
+                            Text("id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text(user.id)
+                        }
+                    } else {
+                        Text("No user information available.")
+                            .foregroundColor(BSGExtendedColors.batman40)
+                    }
                 }
-                HStack() {
-                    Text("ID").bold()
-                    Text(testOrganization.id)
+                Section(header: Text("Organization")) {
+                    if let organization = testOrganization {
+                        VStack(alignment: .leading) {
+                            Text("name").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text(organization.name)
+                        }
+                        VStack(alignment: .leading) {
+                            Text("id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text(organization.id)
+                        }
+                        VStack(alignment: .leading) {
+                            Text("slug").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text(organization.slug)
+                        }
+                    } else {
+                        Text("No organization data available.")
+                            .foregroundColor(BSGExtendedColors.batman40)
+                    }
                 }
-                HStack() {
-                    Text("Slug").bold()
-                    Text(testOrganization.slug)
-                }
-            }.opacity(showUserOrganizationView ? 1.0 : 0.1)
-            Group {
-                Spacer()
+            }
+            .onAppear {
+                testUser = myUser
+                testOrganization = myOrganization
+            }
+
+            VStack() {
                 HStack() {
                     Button(action: {
                         print("Testing Personal Auth Token")
                         /// reset these objects to nil so failures are more obvious
-                        testUser = BSGUser.init()
-                        testOrganization = BSGOrganization.init()
                         tokenTestState = .CHANGED_AND_UNTESTED
-                        getUserAndOrganization(testToken: BSGToken.init(token: testToken)) { rtnUser, rtnOrganization in
-                            if rtnUser != nil && rtnOrganization != nil {
-                                testUser = rtnUser!
-                                testOrganization = rtnOrganization!
+                        testUser = nil
+                        testOrganization = nil
+                        getUserAndOrganization(token: BSGToken.init(token: testToken)) { rtnUser, rtnOrganization in
+                            if let user = rtnUser, let organization = rtnOrganization {
+                                testUser = user
+                                testOrganization = organization
                                 tokenTestState = .CHANGED_AND_TESTED
-                                showUserOrganizationView = true
                             } else {
                                 tokenTestState = .CHANGED_AND_UNTESTED
-                                showUserOrganizationView = false
                             }
                         }
                     }) {
@@ -146,16 +150,14 @@ public struct MyAccountView: View {
                             self.thisView.wrappedValue.dismiss()
                         case .CHANGED_AND_UNTESTED:
                             print("Save: Performing test before saving")
-                            getUserAndOrganization(testToken: BSGToken.init(token: testToken)) { rtnUser, rtnOrganization in
-                                if rtnUser != nil && rtnOrganization != nil {
-                                    myUser = rtnUser!
-                                    myOrganization = rtnOrganization!
+                            getUserAndOrganization(token: BSGToken.init(token: testToken)) { rtnUser, rtnOrganization in
+                                if let user = rtnUser, let organization = rtnOrganization {
+                                    myUser = user
+                                    myOrganization = organization
                                     print("Save: --> Test passed")
                                     self.thisView.wrappedValue.dismiss()
                                 } else {
                                     print("Save: --> Test failed")
-                                    tokenTestState = .CHANGED_AND_UNTESTED
-                                    showUserOrganizationView = false
                                 }
                             }
                         }
@@ -185,14 +187,15 @@ public struct MyAccountView: View {
                     .foregroundColor(Color.white)
                     .cornerRadius(10)
                 }
-            }
+            }.padding(20)
         }
-        .padding(20)
     }
 }
 
 struct MyAccountView_Previews: PreviewProvider {
+    @State static var testUser: BSGUser? // = BSGUser.init(id: "6113b214304caa001430597a", name: "Xander Jones", email: "xander@bugsnag.com")
+    @State static var testOrganization: BSGOrganization?
     static var previews: some View {
-        MyAccountView()
+        MyAccountView(myUser: $testUser, myOrganization: $testOrganization)
     }
 }
