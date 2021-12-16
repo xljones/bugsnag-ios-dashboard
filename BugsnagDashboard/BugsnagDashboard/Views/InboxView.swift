@@ -9,51 +9,70 @@ import Foundation
 import SwiftUI
 
 public struct InboxView: View {
-    public init() { }
+    @Binding var activeProject: ActiveProject?
+    @State var latestErrors: [BSGError]?
     
-    // Use a temporary static error list for now.
-    var errors: [BSGError] = [
-        //BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
-        //BSGError.init(id: UUID().uuidString, errorClass: "class2", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4),
-        //BSGError.init(id: UUID().uuidString, errorClass: "java.lang.Exception", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "bugsnag_example.ViewController.BadError (1)", userCount: 300, eventCount: 800),
-        //BSGError.init(id: UUID().uuidString, errorClass: "__SwiftNativeError", errorMessage: "The operation couldn’t be completed. (bugsnag_example.ViewController.BadError error 1.)", errorContext: "ctx2", userCount: 3, eventCount: 4)
-    ]
+    public init(activeProject: Binding<ActiveProject?>) {
+        _activeProject = activeProject
+    }
     
     public var body: some View {
         VStack(alignment: .leading) {
-            Text("Project Name")
-                .font(.title)
-                .padding(.horizontal, 20.0)
-                .padding(.top, 10.0)
-            Divider()
-                .frame(height:1)
-                .background(BSGSecondaryColors.coral)
-            List {
-                ForEach (errors, id: \.id) { e in
-                    ErrorListItem(error: e)
+            if let project = activeProject {
+                Text(project.details.name)
+                    .font(.title)
+                    .padding(.horizontal, 20.0)
+                    .padding(.top, 10.0)
+                errorListContainerView
+            }
+        }
+        .padding(0)
+        .onAppear {
+                if let project = activeProject {
+                    getErrors(token: myToken, project: project.details) {
+                        switch $0 {
+                        case let .success(rtnErrors):
+                            latestErrors = rtnErrors
+                            print("getErrors Success (on appear)")
+                        case let .failure(error):
+                            print("getProjects Failed (on appear): \(error)")
+                        }
+                    }
                 }
-            }.padding(0)
         }
     }
-}
-
-struct ErrorListItem: View {
-    var error: BSGError
-    public var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(error.errorClass)
-                    .bold()
-                Text(error.context)
+    
+    @ViewBuilder
+    public var errorListContainerView: some View {
+        if let _ = latestErrors {
+            errorListView
+        } else {
+            emptyErrorListView
+        }
+    }
+    
+    var emptyErrorListView: some View {
+        Text("No errors.")
+    }
+    
+    var errorListView: some View {
+        List(latestErrors!, id: \.id) { err in
+            VStack(alignment: .leading) {
+                HStack {
+                    Text(err.errorClass)
+                        .bold()
+                    Text(err.context)
+                }
+                Text(err.message)
+                    .foregroundColor(BSGExtendedColors.batman30)
             }
-            Text(error.message)
-                .foregroundColor(BSGExtendedColors.batman30)
         }
     }
 }
 
 struct InboxView_Previews: PreviewProvider {
+    @State static var testActiveProject: ActiveProject?
     static var previews: some View {
-        InboxView()
+        InboxView(activeProject: $testActiveProject)
     }
 }
