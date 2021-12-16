@@ -7,7 +7,7 @@
 
 import Foundation
 
-// MARK: Token
+// MARK: BSGToken
 public class BSGToken {
     private var token: String
     var tokenKey = "BUGSNAG_DAA_TOKEN"
@@ -39,7 +39,7 @@ public class BSGToken {
     }
 }
 
-// MARK: User
+// MARK: - BSGUser
 public struct BSGUser: Codable {
     var id, name, email: String
     var twoFactorEnabled: Bool?
@@ -48,6 +48,18 @@ public struct BSGUser: Codable {
     var recoveryCodesRemaining: Int?
     var createdAt: String?
     var favoriteProjectIDS: [String]?
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, email
+        case twoFactorEnabled = "two_factor_enabled"
+        case twoFactorEnabledOn = "two_factor_enabled_on"
+        case passwordUpdatedOn = "password_updated_on"
+        case showTimeInUTC = "show_time_in_utc"
+        case heroku
+        case recoveryCodesRemaining = "recovery_codes_remaining"
+        case createdAt = "created_at"
+        case favoriteProjectIDS = "favorite_project_ids"
+    }
     
     init() {
         self.id = ""
