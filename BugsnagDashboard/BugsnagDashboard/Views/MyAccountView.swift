@@ -30,11 +30,11 @@ public struct MyAccountView: View {
     @State private var tokenTestState: BSGTokenTestState = .UNCHANGED
     
     init() {
-        if myUser != nil && myOrganization != nil {
+        if let user = myUser, let organization = myOrganization {
             print("myUser & myOrganization are populated")
             _showUserOrganizationView = State(initialValue: true)
-            _testUser = State(initialValue: myUser!)
-            _testOrganization = State(initialValue: myOrganization!)
+            _testUser = State(initialValue: user)
+            _testOrganization = State(initialValue: organization)
         } else {
             print("myUser is empty")
             _showUserOrganizationView = State(initialValue: false)
@@ -131,7 +131,7 @@ public struct MyAccountView: View {
                     }
                     
                     Button(action: {
-                        if (testToken != previousToken || myOrganization == nil || myUser == nil) {
+                        if testToken != previousToken || myOrganization == nil || myUser == nil {
                             tokenTestState = .CHANGED_AND_UNTESTED
                         }
                         switch(tokenTestState) {
