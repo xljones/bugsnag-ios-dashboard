@@ -8,14 +8,58 @@
 import SwiftUI
 
 public var myToken = BSGToken.init()
-public var myUser: BSGUser?
-public var myOrganization: BSGOrganization?
-public var myProjects: [BSGProject] = []
+
+// The core view of the application
+struct ContentView: View {
+    @State private var myUser: BSGUser?
+    @State private var myOrganization: BSGOrganization?
+    @State private var myProjects: [BSGProject]?
+    @State private var activeProject: ActiveProject?
+    
+    var body: some View {
+        HeaderView(myUser: $myUser, myOrganization: $myOrganization, myProjects: $myProjects, activeProject: $activeProject)
+        TabView {
+            OverviewView(activeProject: $activeProject)
+                .tabItem {
+                    Label("Overview", systemImage:"circle.grid.cross")
+                }
+            InboxView(activeProject: $activeProject)
+                .tabItem {
+                    Label("Inbox", systemImage:"xmark.octagon")
+                }
+            TimelineView()
+                .tabItem {
+                    Label("Timeline", systemImage:"chart.bar.xaxis")
+                }
+            ReleasesView()
+                .tabItem {
+                    Label("Releases", systemImage:"shippingbox")
+                }
+        }
+        .accentColor(BSGSecondaryColors.coral)
+        .padding(0)
+    }
+}
 
 // Title View contains the title text, project context menu button and account context menu button
 struct HeaderView: View {
     @State private var showingMyAccountView: Bool = false
     @State private var showingProjectSelectorView: Bool = false
+    
+    @Binding private var myUser: BSGUser?
+    @Binding private var myOrganization: BSGOrganization?
+    @Binding private var myProjects: [BSGProject]?
+    @Binding private var activeProject: ActiveProject?
+    
+    init(myUser: Binding<BSGUser?>,
+         myOrganization: Binding<BSGOrganization?>,
+         myProjects: Binding<[BSGProject]?>,
+         activeProject: Binding<ActiveProject?>) {
+        _myUser = myUser
+        _myOrganization = myOrganization
+        _myProjects = myProjects
+        _activeProject = activeProject
+    }
     
     var body: some View {
         // A Stack to present a background color
@@ -53,41 +97,13 @@ struct HeaderView: View {
         
         // When Account view is toggled, show this sheet.
         .sheet(isPresented: $showingMyAccountView) {
-            MyAccountView()
+            MyAccountView(myUser: $myUser, myOrganization: $myOrganization)
         }
         
         // When project selector is toggled, show this sheet.
         .sheet(isPresented: $showingProjectSelectorView) {
-            ProjectSelectorView()
+            ProjectSelectorView(myProjects: $myProjects, myOrganization: $myOrganization, activeProject: $activeProject)
         }
-    }
-}
-
-// The core view of the application
-struct ContentView: View {
-    
-    var body: some View {
-        HeaderView()
-        TabView {
-            OverviewView()
-                .tabItem {
-                    Label("Overview", systemImage:"circle.grid.cross")
-                }
-            InboxView()
-                .tabItem {
-                    Label("Inbox", systemImage:"xmark.octagon")
-                }
-            TimelineView()
-                .tabItem {
-                    Label("Timeline", systemImage:"chart.bar.xaxis")
-                }
-            ReleasesView()
-                .tabItem {
-                    Label("Releases", systemImage:"shippingbox")
-                }
-        }
-        .accentColor(BSGSecondaryColors.coral)
-        .padding(0)
     }
 }
 
