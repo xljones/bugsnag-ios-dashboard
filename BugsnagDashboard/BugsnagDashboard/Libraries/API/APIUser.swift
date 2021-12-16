@@ -7,6 +7,7 @@
 
 import Foundation
 
+// MARK: - Get User and related Organization
 func getUserAndOrganization(testToken: BSGToken,
                             callback: @escaping (_ rtnUser: BSGUser?, _ rtnOrganization: BSGOrganization?) -> Void) {
     
@@ -48,6 +49,7 @@ func getUserAndOrganization(testToken: BSGToken,
     }
 }
 
+// MARK: -  Get Organizations
 public func getOrganizations(token: BSGToken,
                              completionHandler: @escaping (Result<[BSGOrganization], Error>) -> Void) {
     var request = URLRequest(url: URL(string: "https://api.bugsnag.com/user/organizations")!)
@@ -66,6 +68,7 @@ public func getOrganizations(token: BSGToken,
     }.resume()
 }
 
+// MARK: - Get User
 public func getUser(token: BSGToken,
                     completionHandler: @escaping (Result<BSGUser, Error>) -> Void) {
     var request = URLRequest(url: URL(string: "https://api.bugsnag.com/user")!)
