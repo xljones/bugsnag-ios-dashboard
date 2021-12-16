@@ -154,6 +154,7 @@ public struct MyAccountView: View {
                                 if let user = rtnUser, let organization = rtnOrganization {
                                     myUser = user
                                     myOrganization = organization
+                                    myToken.setToken(token: testToken)
                                     print("Save: --> Test passed")
                                     self.thisView.wrappedValue.dismiss()
                                 } else {
