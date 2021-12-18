@@ -27,7 +27,7 @@ struct ContentView: View {
                 .tabItem {
                     Label("Inbox", systemImage:"xmark.octagon")
                 }
-            TimelineView()
+            TimelineView(activeProject: $activeProject)
                 .tabItem {
                     Label("Timeline", systemImage:"chart.bar.xaxis")
                 }
