@@ -16,6 +16,21 @@ public struct InboxView: View {
         _activeProject = activeProject
     }
     
+    func refreshLatestErrors() {
+        if let project = activeProject {
+            getErrors(token: myToken, project: project.details) {
+                switch $0 {
+                case let .success(rtnErrors):
+                    latestErrors = rtnErrors
+                    print(latestErrors as Any)
+                    print("getErrors Success (on appear)")
+                case let .failure(error):
+                    print("getProjects Failed (on appear): \(error)")
+                }
+            }
+        }
+    }
+    
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
             VStack(alignment: .leading, spacing: 0) {
@@ -25,7 +40,7 @@ public struct InboxView: View {
                     Text(project.details.name)
                         .font(.footnote)
                 }
-            }.padding(20)
+            }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
             Divider()
             VStack(alignment: .leading) {
                 List {
@@ -51,21 +66,14 @@ public struct InboxView: View {
                                 .foregroundColor(BSGExtendedColors.batman40)
                         }
                     }
-                }.listStyle(GroupedListStyle())
+                }
+                .refreshable {
+                    refreshLatestErrors()
+                }
+                .listStyle(GroupedListStyle())
             }
             .onAppear {
-                if let project = activeProject {
-                    getErrors(token: myToken, project: project.details) {
-                        switch $0 {
-                        case let .success(rtnErrors):
-                            latestErrors = rtnErrors
-                            print(latestErrors)
-                            print("getErrors Success (on appear)")
-                        case let .failure(error):
-                            print("getProjects Failed (on appear): \(error)")
-                        }
-                    }
-                }
+                refreshLatestErrors()
             }
         }
     }
