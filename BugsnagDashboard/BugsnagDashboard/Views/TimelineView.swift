@@ -24,7 +24,7 @@ public struct TimelineView: View {
                     Text(project.details.name)
                         .font(.footnote)
                 }
-            }.padding(20)
+            }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
             Divider()
         }
     }
