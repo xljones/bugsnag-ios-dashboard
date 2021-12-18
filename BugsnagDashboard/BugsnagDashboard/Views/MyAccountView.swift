@@ -100,6 +100,7 @@ public struct MyAccountView: View {
                     }
                 }
             }
+            .listStyle(GroupedListStyle())
             .onAppear {
                 testUser = myUser
                 testOrganization = myOrganization
@@ -125,7 +126,7 @@ public struct MyAccountView: View {
                     }) {
                         HStack {
                             Image(systemName: "pencil.circle")
-                            Text("Test")
+                            Text("Test").bold()
                         }
                         .padding()
                         .frame(maxWidth:.infinity)
@@ -165,7 +166,7 @@ public struct MyAccountView: View {
                     }) {
                         HStack() {
                             Image(systemName: "externaldrive.badge.checkmark")
-                            Text("Save")
+                            Text("Save").bold()
                         }
                         .padding()
                         .frame(maxWidth:.infinity)
@@ -180,7 +181,7 @@ public struct MyAccountView: View {
                 }) {
                     HStack {
                         Image(systemName: "xmark.octagon.fill")
-                        Text("Cancel")
+                        Text("Cancel").bold()
                     }
                     .padding()
                     .frame(maxWidth:.infinity)

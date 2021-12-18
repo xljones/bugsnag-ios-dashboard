@@ -48,13 +48,14 @@ public struct ProjectSelectorView: View {
                         }
                     }
                 } else if myOrganization == nil {
-                    Text("No organization is set.")
+                    Text("No organization is set")
                         .foregroundColor(BSGExtendedColors.batman40)
                 } else {
-                    Text("No projects in organization \(myOrganization!.name).")
+                    Text("No projects in organization \(myOrganization!.name)")
                         .foregroundColor(BSGExtendedColors.batman40)
                 }
             }
+            .listStyle(GroupedListStyle())
             .background(BSGExtendedColors.batman00)
             .refreshable {
                 print("Projects: Refresh project list")

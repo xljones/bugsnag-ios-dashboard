@@ -51,7 +51,7 @@ public struct InboxView: View {
                                 .foregroundColor(BSGExtendedColors.batman40)
                         }
                     }
-                }
+                }.listStyle(GroupedListStyle())
             }
             .onAppear {
                 if let project = activeProject {
