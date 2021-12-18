@@ -16,28 +16,80 @@ public struct OverviewView: View {
         _activeProject = activeProject
     }
     
+    func refreshOverview() {
+        if let project = activeProject {
+            getProjectOverview(token: myToken, project: project.details, completionHandler: {
+                switch $0 {
+                case let .success(rtnProjectOverview):
+                    projectOverview = rtnProjectOverview
+                    print("getProjectOverview Success")
+                case let .failure(error):
+                    print("getProjectOverview Failed: \(error)")
+                }
+            })
+        }
+    }
+    
     public var body: some View {
-        NavigationView {
-            VStack {
+        VStack(alignment: .leading, spacing: 0) {
+            VStack(alignment: .leading, spacing: 0) {
+                Text("Overview")
+                    .font(.title)
                 if let project = activeProject {
                     Text(project.details.name)
-                    Text(project.details.id)
-                    Text(project.details.slug)
-                } else {
-                    Text("No active project set")
+                        .font(.footnote)
                 }
-            }
-            .refreshable {
-                if let project = activeProject {
-                    getProjectOverview(token: myToken, project: project.details, completionHandler: {
-                        switch $0 {
-                        case let .success(rtnProjectOverview):
-                            projectOverview = rtnProjectOverview
-                            print("getProjectOverview Success")
-                        case let .failure(error):
-                            print("getProjectOverview Failed: \(error)")
+            }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
+            Divider()
+            VStack(alignment: .leading) {
+                List {
+                    if let overview = projectOverview {
+                        Section(header: Text("Project Information")) {
+                            VStack(alignment: .leading) {
+                                Text("id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                                Text(overview.projectID)
+                            }
                         }
-                    })
+                        Section(header: Text("Errors For Review")) {
+                            VStack(alignment: .leading) {
+                                Text("current").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                                Text(String(overview.forReview.current))
+                            }
+                            VStack(alignment: .leading) {
+                                Text("one week ago").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                                Text(String(overview.forReview.oneWeekAgo))
+                            }
+                        }
+                        Section(header: Text("Latest Release")) {
+                            if let latestRelease = overview.latestRelease {
+                                VStack(alignment: .leading) {
+                                    Text("release group id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                                    Text(latestRelease.releaseGroupId)
+                                }
+                                VStack(alignment: .leading) {
+                                    Text("first release time").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                                    Text(latestRelease.firstReleaseTime)
+                                }
+                                VStack(alignment: .leading) {
+                                    Text("app version").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                                    Text(latestRelease.appVersion)
+                                }
+                            } else {
+                                Text("No latest release for this project.")
+                                    .foregroundColor(BSGExtendedColors.batman40)
+                            }
+                        }
+                    } else {
+                        Text("No overview information available")
+                            .foregroundColor(BSGExtendedColors.batman40)
+                    }
+                }
+                .refreshable {
+                    refreshOverview()
+                }
+                .listStyle(GroupedListStyle())
+                .onAppear {
+                    refreshOverview()
                 }
             }
         }
