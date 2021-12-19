@@ -17,15 +17,7 @@ public struct TimelineView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Timeline")
-                    .font(.title)
-                if let project = activeProject {
-                    Text(project.details.name)
-                        .font(.footnote)
-                }
-            }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
-            Divider()
+            TabTitle(activeProject: $activeProject, title: "Timeline")
         }
     }
 }

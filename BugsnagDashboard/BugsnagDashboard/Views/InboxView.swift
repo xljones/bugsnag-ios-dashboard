@@ -33,15 +33,7 @@ public struct InboxView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Inbox")
-                    .font(.title)
-                if let project = activeProject {
-                    Text(project.details.name)
-                        .font(.footnote)
-                }
-            }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
-            Divider()
+            TabTitle(activeProject: $activeProject, title: "Inbox")
             VStack(alignment: .leading) {
                 List {
                     Section(header: Text("Latest errors")) {

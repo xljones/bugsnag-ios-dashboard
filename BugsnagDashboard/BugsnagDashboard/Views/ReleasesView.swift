@@ -9,16 +9,42 @@ import Foundation
 import SwiftUI
 
 public struct ReleasesView: View {
-    public init() {
+    @Binding var activeProject: ActiveProject?
+    //@State var releases: [BSGRelease]?
+    
+    public init(activeProject: Binding<ActiveProject?>) {
+        _activeProject = activeProject
+    }
+    
+    func refreshReleases() {
+        if let project = activeProject {
+            // refresh releases here.
+        }
     }
     
     public var body: some View {
-        Text("Releases View goes here")
+        VStack(alignment: .leading, spacing: 0) {
+            TabTitle(activeProject: $activeProject, title: "Releases")
+            VStack(alignment: .leading) {
+                List {
+                    Text("No release information available")
+                        .foregroundColor(BSGExtendedColors.batman40)
+                }
+                .refreshable {
+                    refreshReleases()
+                }
+                .listStyle(GroupedListStyle())
+                .onAppear {
+                    refreshReleases()
+                }
+            }
+        }
     }
 }
 
 struct ReleasesView_Previews: PreviewProvider {
+    @State static var testActiveProject: ActiveProject?
     static var previews: some View {
-        ReleasesView()
+        ReleasesView(activeProject: $testActiveProject)
     }
 }

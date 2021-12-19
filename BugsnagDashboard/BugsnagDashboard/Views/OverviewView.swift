@@ -32,15 +32,7 @@ public struct OverviewView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            VStack(alignment: .leading, spacing: 0) {
-                Text("Overview")
-                    .font(.title)
-                if let project = activeProject {
-                    Text(project.details.name)
-                        .font(.footnote)
-                }
-            }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
-            Divider()
+            TabTitle(activeProject: $activeProject, title: "Overview")
             VStack(alignment: .leading) {
                 List {
                     if let overview = projectOverview {
