@@ -6,3 +6,36 @@
 //
 
 import Foundation
+
+/// Function to convert an integer to a compressed 1,000 (k) or 1,000,000 (M) value
+/// and round it to one decimal place.
+public func applyCondensedUnits(value: Int) -> String {
+    let valAsDouble = Double(value)
+    if value >= 1000000 {
+        let valRounded = ((valAsDouble / Double(1000000)) * 10).rounded() / 10.0
+        return "\(valRounded)M"
+    } else if value >= 1000 {
+        let valRounded = ((valAsDouble / Double(1000)) * 10).rounded() / 10.0
+        return "\(valRounded)k"
+    } else {
+        return String(value)
+    }
+}
+
+/// Given an ISO8601 Timestamp, it converts this to a user friendly string relative to the current time/date
+// TODO: - Update this to work relative to the users timezone. Does the ISO8601Formatter() already take care of this?
+public func getRelativeTimestamp(iso8601Timestamp: String) -> String {
+    // https://stackoverflow.com/a/42101630/6277366 setup formatter for Rails formatted output
+    let railsIso8601Formatter = ISO8601DateFormatter()
+    railsIso8601Formatter.formatOptions = [.withFullDate,
+                                           .withTime,
+                                           .withDashSeparatorInDate,
+                                           .withColonSeparatorInTime]
+    let timestamp = railsIso8601Formatter.date(from: iso8601Timestamp)
+    if timestamp != nil {
+        let relativeTimestamp = RelativeDateTimeFormatter().localizedString(for: timestamp!, relativeTo: Date())
+        return relativeTimestamp
+    } else {
+        return iso8601Timestamp
+    }
+}
