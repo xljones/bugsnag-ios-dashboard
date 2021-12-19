@@ -32,57 +32,59 @@ public struct OverviewView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            TabTitle(activeProject: $activeProject, title: "Overview")
-            VStack(alignment: .leading) {
-                List {
-                    if let overview = projectOverview {
-                        Section(header: Text("Project Information")) {
-                            VStack(alignment: .leading) {
-                                Text("id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
-                                Text(overview.projectID)
-                            }
-                        }
-                        Section(header: Text("Errors For Review")) {
-                            VStack(alignment: .leading) {
-                                Text("current").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
-                                Text(String(overview.forReview.current))
-                            }
-                            VStack(alignment: .leading) {
-                                Text("one week ago").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
-                                Text(String(overview.forReview.oneWeekAgo))
-                            }
-                        }
-                        Section(header: Text("Latest Release")) {
-                            if let latestRelease = overview.latestRelease {
+            NavigationView {
+                VStack(alignment: .leading) {
+                    List {
+                        if let overview = projectOverview {
+                            Section(header: Text("Project Information")) {
                                 VStack(alignment: .leading) {
-                                    Text("release group id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
-                                    Text(latestRelease.releaseGroupId)
+                                    Text("id").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
+                                    Text(overview.projectID)
+                                }
+                            }
+                            Section(header: Text("Errors For Review")) {
+                                VStack(alignment: .leading) {
+                                    Text("current").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
+                                    Text(String(overview.forReview.current))
                                 }
                                 VStack(alignment: .leading) {
-                                    Text("first release time").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
-                                    Text(latestRelease.firstReleaseTime)
+                                    Text("one week ago").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
+                                    Text(String(overview.forReview.oneWeekAgo))
                                 }
-                                VStack(alignment: .leading) {
-                                    Text("app version").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
-                                    Text(latestRelease.appVersion)
-                                }
-                            } else {
-                                Text("No latest release for this project.")
-                                    .foregroundColor(BSGExtendedColors.batman40)
                             }
+                            Section(header: Text("Latest Release")) {
+                                if let latestRelease = overview.latestRelease {
+                                    VStack(alignment: .leading) {
+                                        Text("release group id").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
+                                        Text(latestRelease.releaseGroupId)
+                                    }
+                                    VStack(alignment: .leading) {
+                                        Text("first release time").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
+                                        Text(latestRelease.firstReleaseTime)
+                                    }
+                                    VStack(alignment: .leading) {
+                                        Text("app version").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
+                                        Text(latestRelease.appVersion)
+                                    }
+                                } else {
+                                    Text("No latest release for this project.")
+                                        .foregroundColor(Color.secondary)
+                                }
+                            }
+                        } else {
+                            Text("No overview information available")
+                                .foregroundColor(Color.secondary)
                         }
-                    } else {
-                        Text("No overview information available")
-                            .foregroundColor(BSGExtendedColors.batman40)
+                    }
+                    .refreshable {
+                        refreshOverview()
+                    }
+                    .listStyle(GroupedListStyle())
+                    .onAppear {
+                        refreshOverview()
                     }
                 }
-                .refreshable {
-                    refreshOverview()
-                }
-                .listStyle(GroupedListStyle())
-                .onAppear {
-                    refreshOverview()
-                }
+                .navigationTitle("Overview")
             }
         }
     }
