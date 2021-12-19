@@ -24,7 +24,7 @@ public struct BSGError: Codable {
     let assignedCollaboratorID: String?
     let commentCount: Int
     let missingDsyms: [String]?
-    let releaseStages: [String]?
+    let releaseStages: [String]
     let groupingReason: String?
     let groupingFields: BSGErrorGroupingFields
     let url, projectURL: String
