@@ -16,6 +16,9 @@ struct ContentView: View {
     @State private var myProjects: [BSGProject]?
     @State private var activeProject: ActiveProject?
     
+    public init() {
+    }
+    
     var body: some View {
         HeaderView(myUser: $myUser, myOrganization: $myOrganization, myProjects: $myProjects, activeProject: $activeProject)
         
@@ -41,6 +44,12 @@ struct ContentView: View {
             if #available(iOS 15.0, *) {
                 let appearance = UITabBarAppearance()
                 UITabBar.appearance().scrollEdgeAppearance = appearance
+            }
+            getUserAndOrganization(token: myToken) { rtnUser, rtnOrganization in
+                if let user = rtnUser, let organization = rtnOrganization {
+                    myUser = user
+                    myOrganization = organization
+                }
             }
         }
         .accentColor(BSGSecondaryColors.coral)
@@ -99,40 +108,18 @@ struct HeaderView: View {
             .frame(height: 70.0)
             
         }
-        .background(BSGExtendedColors.batman00.edgesIgnoringSafeArea(.top))
-        // Ignore top safe area to extend the background colour up to the top of screen.
+        .background(Color.systemBackground.edgesIgnoringSafeArea(.top))
+        /// Ignore top safe area to extend the background colour up to the top of screen.
         
-        // When Account view is toggled, show this sheet.
+        /// When Account view is toggled, show this sheet.
         .sheet(isPresented: $showingMyAccountView) {
             MyAccountView(myUser: $myUser, myOrganization: $myOrganization)
         }
         
-        // When project selector is toggled, show this sheet.
+        /// When project selector is toggled, show this sheet.
         .sheet(isPresented: $showingProjectSelectorView) {
             ProjectSelectorView(myProjects: $myProjects, myOrganization: $myOrganization, activeProject: $activeProject)
         }
-    }
-}
-
-public struct TabTitle: View {
-    @Binding var activeProject: ActiveProject?
-    var theTitle: String
-    
-    public init(activeProject: Binding<ActiveProject?>, title: String) {
-        _activeProject = activeProject
-        theTitle = title
-    }
-    
-    public var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(theTitle)
-                .font(.title)
-            if let project = activeProject {
-                Text(project.details.name)
-                    .font(.footnote)
-            }
-        }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
-        Divider()
     }
 }
 
