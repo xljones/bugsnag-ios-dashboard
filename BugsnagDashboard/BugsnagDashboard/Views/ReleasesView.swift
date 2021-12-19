@@ -24,19 +24,21 @@ public struct ReleasesView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            TabTitle(activeProject: $activeProject, title: "Releases")
-            VStack(alignment: .leading) {
-                List {
-                    Text("No release information available")
-                        .foregroundColor(BSGExtendedColors.batman40)
+            NavigationView {
+                VStack(alignment: .leading) {
+                    List {
+                        Text("No release information available")
+                            .foregroundColor(Color.secondary)
+                    }
+                    .refreshable {
+                        refreshReleases()
+                    }
+                    .listStyle(GroupedListStyle())
+                    .onAppear {
+                        refreshReleases()
+                    }
                 }
-                .refreshable {
-                    refreshReleases()
-                }
-                .listStyle(GroupedListStyle())
-                .onAppear {
-                    refreshReleases()
-                }
+                .navigationTitle("Releases")
             }
         }
     }
