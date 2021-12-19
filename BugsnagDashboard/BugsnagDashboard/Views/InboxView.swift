@@ -33,30 +33,33 @@ public struct InboxView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            TabTitle(activeProject: $activeProject, title: "Inbox")
-            VStack(alignment: .leading) {
+            //MyTabTitle(activeProject: $activeProject, title: "Inbox")
+            NavigationView {
                 List {
-                    Section(header: Text("Latest errors")) {
-                        if let errs = latestErrors {
-                            if (errs.count == 0) {
-                                Text("No errors on this project")
-                                    .foregroundColor(BSGExtendedColors.batman40)
-                            } else {
-                                ForEach(errs, id: \.id) { err in
+                    if let errs = latestErrors {
+                        if (errs.count == 0) {
+                            Text("No errors on this project")
+                                .foregroundColor(Color.secondary)
+                        } else {
+                            ForEach(errs, id: \.id) { err in
+                                NavigationLink(destination: ErrorView(errorToRender: err)) {
                                     ErrorTableRow(errorToRender: err)
+                                        .navigationBarBackButtonHidden(true)
                                 }
                             }
-                        } else {
-                            Text("No error information available.")
-                                .foregroundColor(BSGExtendedColors.batman40)
                         }
+                    } else {
+                        Text("No error information available.")
+                            .foregroundColor(Color.secondary)
                     }
                 }
+                .listStyle(GroupedListStyle())
                 .refreshable {
                     refreshLatestErrors()
                 }
-                .listStyle(GroupedListStyle())
+                .navigationTitle("Latest errors")
             }
+            .frame(alignment: .top)
             .onAppear {
                 refreshLatestErrors()
             }
@@ -83,77 +86,89 @@ struct ErrorTableRow: View {
         }
     }
     
-    func getRelativeTimestamp(iso8601Timestamp: String) -> String {
-        // https://stackoverflow.com/a/42101630/6277366 setup formatter for Rails formatted output
-        let railsIso8601Formatter = ISO8601DateFormatter()
-        railsIso8601Formatter.formatOptions = [.withFullDate,
-                                               .withTime,
-                                               .withDashSeparatorInDate,
-                                               .withColonSeparatorInTime]
-        let timestamp = railsIso8601Formatter.date(from: iso8601Timestamp)
-        if timestamp != nil {
-            let relativeTimestamp = RelativeDateTimeFormatter().localizedString(for: timestamp!, relativeTo: Date())
-            return relativeTimestamp
-        } else {
-            return iso8601Timestamp
-        }
-    }
-    
-    func calcSeverityColor(severity: String) -> Color {
+    func getSeverityColor(severity: String) -> Color {
         switch severity {
         case "error":
-            return Color.red
+            return Color.systemRed
         case "warning":
-            return Color.orange
+            return Color.systemOrange
         case "info":
-            return Color.blue
+            return Color.systemBlue
         default:
-            return Color.red
+            return Color.systemRed
         }
     }
     
     public var body: some View {
-        VStack(alignment: .leading, spacing: 1) {
-            HStack(alignment: .center) {
-                Text(err.severity.uppercased())
-                    .bold()
-                    .font(.system(size:10))
-                    .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
-                    .foregroundColor(Color.white)
-                    .background(calcSeverityColor(severity: err.severity))
-                    .cornerRadius(10)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 10)
-                            .stroke(calcSeverityColor(severity: err.severity), lineWidth: 1)
-                    )
-                let additionalReleaseStages: String = err.releaseStages.count > 1 ? " + \(err.releaseStages.count - 1)" : ""
-                Text("\(err.releaseStages[0])\(additionalReleaseStages)")
+        Button(action: { print("Selecting error \(err.id)") }) {
+            VStack(alignment: .leading, spacing: 1) {
+                HStack(alignment: .center) {
+                    Text(err.severity.uppercased())
+                        .bold()
                         .font(.system(size:10))
                         .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
+                        .foregroundColor(Color.white)
+                        .background(getSeverityColor(severity: err.severity))
+                        .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(Color.gray, lineWidth: 1)
+                                .stroke(getSeverityColor(severity: err.severity), lineWidth: 1)
                         )
-            }.padding(.bottom, 3)
-            HStack(alignment: .center) {
-                Text(err.errorClass)
-                    .bold()
-                Text(err.context)
-                    .frame(height:12)
+                    let additionalReleaseStages: String = err.releaseStages.count > 1 ? " + \(err.releaseStages.count - 1)" : ""
+                    Text("\(err.releaseStages[0])\(additionalReleaseStages)")
+                            .font(.system(size:10))
+                            .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.gray, lineWidth: 1)
+                            )
+                    Spacer()
+                    HStack() {
+                        Image(systemName: "xmark.octagon")
+                        Text(applyCondensedUnits(value: err.events))
+                            .font(.system(size:10))
+                    }
+                    .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
+                    HStack() {
+                        Image(systemName: "person")
+                        Text(applyCondensedUnits(value: err.users))
+                            .font(.system(size:10))
+                    }
+                    .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
+                }.padding(.bottom, 3)
+                HStack(alignment: .center) {
+                    Text(err.errorClass)
+                        .bold()
+                    Text(err.context)
+                        .frame(height:12)
+                        .truncationMode(.tail)
+                }
+                Text(err.message)
+                    .font(.system(size:11))
+                    .foregroundColor(Color.secondary)
+                    .frame( height:11)
                     .truncationMode(.tail)
+                Text(friendlyFirstLastSeenTimestamp(firstSeen: err.firstSeen, lastSeen: err.lastSeen))
+                    .font(.system(size:11))
+                    .foregroundColor(Color.tertiaryLabel)
+                    .frame( height:11)
+                    .padding(.top, 3)
             }
-            Text(err.message)
-                .font(.system(size:11))
-                .foregroundColor(BSGExtendedColors.batman70)
-                .frame( height:11)
-                .truncationMode(.tail)
-            Text(friendlyFirstLastSeenTimestamp(firstSeen: err.firstSeen, lastSeen: err.lastSeen))
-                .font(.system(size:11))
-                .foregroundColor(BSGExtendedColors.batman40)
-                .frame( height:11)
-                .padding(.top, 3)
+            .font(.system(size:12))
+            .foregroundColor(Color.primary)
         }
-        .font(.system(size:12))
+    }
+}
+
+struct ErrorView: View {
+    var err: BSGError
+    
+    init(errorToRender: BSGError) {
+        err = errorToRender
+    }
+    
+    var body: some View {
+        Text("This is the error view for error: \(err.id)")
     }
 }
 
@@ -166,11 +181,21 @@ struct InboxView_Previews: PreviewProvider {
 }
 
 struct ErrorTableRow_Previews: PreviewProvider {
-    static let sampleError = "{\"id\": \"618964a1308b00000a0c130b\",\"project_id\": \"5e4a9527ef8b1a000e53bed5\",\"error_class\": \"Fatal error\",\"message\": \"Restarting app to switch endpoints\",\"context\": \"closure #1 in variable initialization expression of ViewController.sections\",\"severity\": \"error\",\"original_severity\": \"error\",\"overridden_severity\": null,\"events\": 1,\"events_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b/events\",\"unthrottled_occurrence_count\": 1,\"users\": 1,\"first_seen\": \"2021-11-08T17:55:45.000Z\",\"last_seen\": \"2021-11-08T17:55:45.000Z\",\"first_seen_unfiltered\": \"2021-11-08T17:55:45.000Z\",\"last_seen_unfiltered\": \"2021-11-08T17:55:45.733Z\",\"status\": \"open\",\"created_issue\": {\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"},\"linked_issues\": [{\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"}],\"reopen_rules\": null,\"assigned_collaborator_id\": null,\"comment_count\": 0,\"missing_dsyms\": [],\"release_stages\": [\"production\", \"development\"],\"grouping_reason\": \"frame-inner\",\"grouping_fields\": {\"file\": \"swift-ios\",\"relativeAddress\": \"0x4ee4\",\"errorClass\": \"Fatal error\"},\"url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b\",\"project_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5\"}"
+    static let sampleError = "{\"id\": \"618964a1308b00000a0c130b\",\"project_id\": \"5e4a9527ef8b1a000e53bed5\",\"error_class\": \"Fatal error\",\"message\": \"Restarting app to switch endpoints\",\"context\": \"closure #1 in variable initialization expression of ViewController.sections\",\"severity\": \"error\",\"original_severity\": \"error\",\"overridden_severity\": null,\"events\": 5400000,\"events_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b/events\",\"unthrottled_occurrence_count\": 1,\"users\": 3530,\"first_seen\": \"2021-11-08T17:55:45.000Z\",\"last_seen\": \"2021-11-08T17:55:45.000Z\",\"first_seen_unfiltered\": \"2021-11-08T17:55:45.000Z\",\"last_seen_unfiltered\": \"2021-11-08T17:55:45.733Z\",\"status\": \"open\",\"created_issue\": {\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"},\"linked_issues\": [{\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"}],\"reopen_rules\": null,\"assigned_collaborator_id\": null,\"comment_count\": 0,\"missing_dsyms\": [],\"release_stages\": [\"production\", \"development\", \"staging\"],\"grouping_reason\": \"frame-inner\",\"grouping_fields\": {\"file\": \"swift-ios\",\"relativeAddress\": \"0x4ee4\",\"errorClass\": \"Fatal error\"},\"url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b\",\"project_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5\"}"
         .data(using: .utf8)
     static let sampleErrorObject = try? JSONDecoder().decode(BSGError.self, from: sampleError!)
     static var previews: some View {
         ErrorTableRow(errorToRender: sampleErrorObject!)
+.previewInterfaceOrientation(.portrait)
+    }
+}
+
+struct ErrorView_Previews: PreviewProvider {
+    static let sampleError = "{\"id\": \"618964a1308b00000a0c130b\",\"project_id\": \"5e4a9527ef8b1a000e53bed5\",\"error_class\": \"Fatal error\",\"message\": \"Restarting app to switch endpoints\",\"context\": \"closure #1 in variable initialization expression of ViewController.sections\",\"severity\": \"error\",\"original_severity\": \"error\",\"overridden_severity\": null,\"events\": 5400000,\"events_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b/events\",\"unthrottled_occurrence_count\": 1,\"users\": 3530,\"first_seen\": \"2021-11-08T17:55:45.000Z\",\"last_seen\": \"2021-11-08T17:55:45.000Z\",\"first_seen_unfiltered\": \"2021-11-08T17:55:45.000Z\",\"last_seen_unfiltered\": \"2021-11-08T17:55:45.733Z\",\"status\": \"open\",\"created_issue\": {\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"},\"linked_issues\": [{\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"}],\"reopen_rules\": null,\"assigned_collaborator_id\": null,\"comment_count\": 0,\"missing_dsyms\": [],\"release_stages\": [\"production\", \"development\", \"staging\"],\"grouping_reason\": \"frame-inner\",\"grouping_fields\": {\"file\": \"swift-ios\",\"relativeAddress\": \"0x4ee4\",\"errorClass\": \"Fatal error\"},\"url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b\",\"project_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5\"}"
+        .data(using: .utf8)
+    static let sampleErrorObject = try? JSONDecoder().decode(BSGError.self, from: sampleError!)
+    static var previews: some View {
+        ErrorView(errorToRender: sampleErrorObject!)
 .previewInterfaceOrientation(.portrait)
     }
 }
