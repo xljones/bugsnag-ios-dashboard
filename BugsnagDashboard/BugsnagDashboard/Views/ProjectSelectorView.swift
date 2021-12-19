@@ -46,14 +46,14 @@ public struct ProjectSelectorView: View {
                     }
                 } else if myOrganization == nil {
                     Text("No organization is set")
-                        .foregroundColor(BSGExtendedColors.batman40)
+                        .foregroundColor(Color.secondary)
                 } else {
                     Text("No projects in organization \(myOrganization!.name)")
-                        .foregroundColor(BSGExtendedColors.batman40)
+                        .foregroundColor(Color.secondary)
                 }
             }
             .listStyle(GroupedListStyle())
-            .background(BSGExtendedColors.batman00)
+            .background(Color.gray)
             .refreshable {
                 print("Projects: Refresh project list")
                 if let organization = myOrganization {
@@ -71,7 +71,7 @@ public struct ProjectSelectorView: View {
                 }
             }
             Text("Pull to refresh")
-                .foregroundColor(BSGExtendedColors.batman20)
+                .foregroundColor(Color.tertiaryLabel)
                 .font(.system(size: 10))
                 .frame(maxWidth: .infinity, alignment: .center)
         }

@@ -47,11 +47,11 @@ public struct MyAccountView: View {
                     }
                 }
                 Text("This is your authentication token generated through app.bugnsag.com")
-                    .foregroundColor(BSGExtendedColors.batman30)
+                    .foregroundColor(Color.secondary)
                     .font(.system(size: 10))
                 HStack() {
                     Image(systemName: "key")
-                        .foregroundColor(BSGExtendedColors.batman30)
+                        .foregroundColor(Color.tertiaryLabel)
                     TextField("Authentication token...", text: $testToken)
                 }
                 Divider()
@@ -61,39 +61,39 @@ public struct MyAccountView: View {
                 Section(header: Text("User")) {
                     if let user = testUser {
                         VStack(alignment: .leading) {
-                            Text("name").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text("name").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
                             Text(user.name)
                         }
                         VStack(alignment: .leading) {
-                            Text("email").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text("email").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
                             Text(user.email)
                         }
                         VStack(alignment: .leading) {
-                            Text("id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text("id").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
                             Text(user.id)
                         }
                     } else {
                         Text("No user information available.")
-                            .foregroundColor(BSGExtendedColors.batman40)
+                            .foregroundColor(Color.secondary)
                     }
                 }
                 Section(header: Text("Organization")) {
                     if let organization = testOrganization {
                         VStack(alignment: .leading) {
-                            Text("name").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text("name").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
                             Text(organization.name)
                         }
                         VStack(alignment: .leading) {
-                            Text("id").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text("id").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
                             Text(organization.id)
                         }
                         VStack(alignment: .leading) {
-                            Text("slug").foregroundColor(BSGExtendedColors.batman40).font(.system(size:10))
+                            Text("slug").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
                             Text(organization.slug)
                         }
                     } else {
                         Text("No organization data available.")
-                            .foregroundColor(BSGExtendedColors.batman40)
+                            .foregroundColor(Color.secondary)
                     }
                 }
             }
