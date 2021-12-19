@@ -25,10 +25,7 @@ public struct ProjectSelectorView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("Projects")
-                .font(.title)
-                .frame(width: .infinity, alignment: .leading)
-                .padding(20)
+            SheetTitle(title: "Projects")
             List {
                 if let projects = myProjects {
                     ForEach(Array(projects.enumerated()), id: \.offset) { index, project in

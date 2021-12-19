@@ -18,6 +18,7 @@ struct ContentView: View {
     
     var body: some View {
         HeaderView(myUser: $myUser, myOrganization: $myOrganization, myProjects: $myProjects, activeProject: $activeProject)
+        
         TabView {
             OverviewView(activeProject: $activeProject)
                 .tabItem {
@@ -31,10 +32,16 @@ struct ContentView: View {
                 .tabItem {
                     Label("Timeline", systemImage:"chart.bar.xaxis")
                 }
-            ReleasesView()
+            ReleasesView(activeProject: $activeProject)
                 .tabItem {
                     Label("Releases", systemImage:"shippingbox")
                 }
+        }
+        .onAppear {
+            if #available(iOS 15.0, *) {
+                let appearance = UITabBarAppearance()
+                UITabBar.appearance().scrollEdgeAppearance = appearance
+            }
         }
         .accentColor(BSGSecondaryColors.coral)
         .padding(0)
@@ -104,6 +111,44 @@ struct HeaderView: View {
         .sheet(isPresented: $showingProjectSelectorView) {
             ProjectSelectorView(myProjects: $myProjects, myOrganization: $myOrganization, activeProject: $activeProject)
         }
+    }
+}
+
+public struct TabTitle: View {
+    @Binding var activeProject: ActiveProject?
+    var theTitle: String
+    
+    public init(activeProject: Binding<ActiveProject?>, title: String) {
+        _activeProject = activeProject
+        theTitle = title
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(theTitle)
+                .font(.title)
+            if let project = activeProject {
+                Text(project.details.name)
+                    .font(.footnote)
+            }
+        }.padding(.trailing, 20).padding(.leading, 20).padding(.bottom, 10)
+        Divider()
+    }
+}
+
+public struct SheetTitle: View {
+    var theTitle: String
+    
+    public init(title: String) {
+        theTitle = title
+    }
+    
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            Text(theTitle)
+                .font(.title)
+        }.padding(20)
+        Divider()
     }
 }
 

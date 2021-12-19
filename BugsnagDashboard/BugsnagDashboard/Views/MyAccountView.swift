@@ -35,10 +35,7 @@ public struct MyAccountView: View {
            
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text("My Account")
-                .font(.title)
-                .padding(20)
-            Divider()
+            SheetTitle(title: "My Account")
             VStack(alignment: .leading) {
                 HStack() {
                     Text("Personal Authentication Token")
