@@ -17,7 +17,12 @@ public struct TimelineView: View {
     
     public var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            TabTitle(activeProject: $activeProject, title: "Timeline")
+            NavigationView {
+                List {
+                    
+                }
+                .navigationTitle("Timeline")
+            }
         }
     }
 }
