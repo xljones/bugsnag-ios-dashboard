@@ -59,6 +59,8 @@ struct ContentView: View {
 
 // Title View contains the title text, project context menu button and account context menu button
 struct HeaderView: View {
+    @Environment(\.colorScheme) var colorScheme
+    
     @State private var showingMyAccountView: Bool = false
     @State private var showingProjectSelectorView: Bool = false
     
@@ -82,30 +84,34 @@ struct HeaderView: View {
         ZStack() {
             // A horizontal stack to contain the hamburger, title, and account buttons
             HStack() {
-                Divider()
                 Button(action: {
                     print("Open the project menu")
                     self.showingProjectSelectorView.toggle()
                 }) {
                     Image(systemName: "line.horizontal.3")
                         .font(.system(size: 30))
-                        .foregroundColor(BSGPrimaryColors.indigo)
-                }
+                        .foregroundColor(colorScheme == .light ? BSGPrimaryColors.indigo : Color.white)
+                }.padding(.leading, 6)
                 Spacer()
-                Image("bugsnag_logo_navy")
-                    .resizable()
-                    .scaledToFit()
+                if (colorScheme == .light) {
+                    Image("bugsnag_logo_navy")
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    Image("bugsnag_logo_white")
+                        .resizable()
+                        .scaledToFit()
+                }
                 Spacer()
                 Button(action: {
                     self.showingMyAccountView.toggle()
                 }) {
                     Image(systemName: "person.crop.circle")
                         .font(.system(size: 30))
-                        .foregroundColor(BSGPrimaryColors.indigo)
-                }
-                Divider()
+                        .foregroundColor(colorScheme == .light ? BSGPrimaryColors.indigo : Color.white)
+                }.padding(.trailing, 6)
             }
-            .frame(height: 70.0)
+            .frame(height: 60.0)
             
         }
         .background(Color.systemBackground.edgesIgnoringSafeArea(.top))
