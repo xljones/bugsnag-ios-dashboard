@@ -39,8 +39,7 @@ public struct ProjectSelectorView: View {
                                     .foregroundColor(project.id == activeProject?.details.id ? BSGSecondaryColors.coral : BSGPrimaryColors.indigo)
                                     .imageScale(.large)
                                 Text(project.name)
-                                    .foregroundColor(BSGPrimaryColors.midnight)
-                                    .font(.subheadline)
+                                    .foregroundColor(Color.primary)
                             }
                         }
                     }
