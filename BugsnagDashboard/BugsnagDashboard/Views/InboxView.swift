@@ -168,7 +168,65 @@ struct ErrorView: View {
     }
     
     var body: some View {
-        Text("This is the error view for error: \(err.id)")
+        List {
+            Section(header: Text("Error information")) {
+                KeyValueRow(key: "class", value: err.errorClass)
+                KeyValueRow(key: "context", value: err.context)
+                KeyValueRow(key: "message", value: err.message)
+            }
+            Section(header: Text("Stability")) {
+                
+            }
+            Section(header: Text("Grouping")) {
+                KeyValueRow(key: "reason", value: err.groupingReason)
+                if let groupingFields = err.groupingFields {
+                    if let value = groupingFields.errorClass { KeyValueRow(key: "class", value: value) }
+                    if let value = groupingFields.domain { KeyValueRow(key: "domain", value: value) }
+                    if let value = groupingFields.file { KeyValueRow(key: "file", value: value) }
+                    if let value = groupingFields.lineNumber { KeyValueRow(key: "line no.", value: String(value)) }
+                }
+            }
+            if let linkedIssues = err.linkedIssues {
+                Section(header: Text("Linked issues")) {
+                    ForEach(linkedIssues, id: \.id) { linkedIssue in
+                        LinkedIssueRow(linkedIssueToRender: linkedIssue)
+                    }
+                }
+            }
+            Section(header: Text("Additional")) {
+                KeyValueRow(key: "id", value: err.id)
+            }
+        }
+        .listStyle(GroupedListStyle())
+    }
+}
+
+struct LinkedIssueRow: View {
+    var linkedIssue: BSGErrorLinkedIssue
+    
+    init(linkedIssueToRender: BSGErrorLinkedIssue) {
+        self.linkedIssue = linkedIssueToRender
+    }
+    
+    var body: some View {
+        Text("Linked issue \(linkedIssue.id)")
+    }
+}
+
+struct KeyValueRow: View {
+    var key: String
+    var value: String
+    
+    init(key: String, value: String) {
+        self.key = key
+        self.value = value
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text(self.key).foregroundColor(Color.tertiaryLabel).font(.system(size:10))
+            Text(self.value)
+        }
     }
 }
 
