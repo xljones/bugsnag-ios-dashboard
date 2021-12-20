@@ -19,13 +19,13 @@ public struct BSGError: Codable {
     let firstSeen, lastSeen, firstSeenUnfiltered, lastSeenUnfiltered: String
     let status: String
     // let createdIssue: BSGErrorLinkedIssues // Ignore this fields, it's duplicared by `linkedIssues`
-    let linkedIssues: [BSGErrorLinkedIssues]
+    let linkedIssues: [BSGErrorLinkedIssue]
     let reopenRules: BSGErrorReopenRules?
     let assignedCollaboratorID: String?
     let commentCount: Int
     let missingDsyms: [String]?
     let releaseStages: [String]
-    let groupingReason: String?
+    let groupingReason: String
     let groupingFields: BSGErrorGroupingFields
     let url, projectURL: String
 
@@ -68,9 +68,9 @@ struct BSGErrorGroupingFields: Codable {
 }
 
 // MARK: - BSGErrorLinkedIssues
-struct BSGErrorLinkedIssues: Codable {
-    let id, key, type, url: String?
-    let number: Int?
+struct BSGErrorLinkedIssue: Codable {
+    let id, key, type, url: String
+    let number: Int
 }
 
 // MARK: - BSGErrorReopenRules
