@@ -39,3 +39,17 @@ public func getRelativeTimestamp(iso8601Timestamp: String) -> String {
         return iso8601Timestamp
     }
 }
+
+
+/// Given two ISO 8601 Timestamp strings, calculated a friendly first and last seen timestamp
+/// such as "about 1 month ago", "about 1 hour ago", or "about 1 month ago – 5 months ago"
+public func friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: String, lastSeenIso8601Timestamp: String) -> String {
+    let firstSeenRelative = getRelativeTimestamp(iso8601Timestamp: firstSeenIso8601Timestamp)
+    let lastSeenRelative = getRelativeTimestamp(iso8601Timestamp: lastSeenIso8601Timestamp)
+    
+    if firstSeenRelative == lastSeenRelative {
+        return "about " + lastSeenRelative
+    } else {
+        return "about " + lastSeenRelative + " – " + firstSeenRelative
+    }
+}
