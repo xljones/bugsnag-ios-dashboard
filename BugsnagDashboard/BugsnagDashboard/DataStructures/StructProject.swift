@@ -73,7 +73,7 @@ public struct BSGProjectOverview: Codable {
     }
 }
 
-// MARK: - BSGProjectOverviewForReview
+// MARK:  BSGProjectOverviewForReview
 struct BSGProjectOverviewForReview: Codable {
     let oneWeekAgo: Int
     let current: Int
@@ -84,7 +84,7 @@ struct BSGProjectOverviewForReview: Codable {
     }
 }
 
-// MARK: - BSGProjectOverviewLatestRelease
+// MARK:  BSGProjectOverviewLatestRelease
 struct BSGProjectOverviewLatestRelease: Codable {
     let releaseGroupId: String
     let appVersion: String
@@ -94,5 +94,37 @@ struct BSGProjectOverviewLatestRelease: Codable {
         case releaseGroupId = "release_group_id"
         case appVersion = "app_version"
         case firstReleaseTime = "first_release_time"
+    }
+}
+
+// MARK: - BSGProjectStability
+public struct BSGProjectStability: Codable {
+    let projectID, releaseStageName: String
+    let timelinePoints: [BSGProjectStabilityTimelinePoint]
+
+    enum CodingKeys: String, CodingKey {
+        case projectID = "project_id"
+        case releaseStageName = "release_stage_name"
+        case timelinePoints = "timeline_points"
+    }
+}
+
+// MARK: BSGProjectStabilityTimelinePoint
+struct BSGProjectStabilityTimelinePoint: Codable {
+    let bucketStart, bucketEnd: String
+    let totalSessionsCount, unhandledSessionsCount: Int
+    let unhandledRate: Double
+    let usersSeen, usersWithUnhandled: Int
+    let unhandledUserRate: Double
+
+    enum CodingKeys: String, CodingKey {
+        case bucketStart = "bucket_start"
+        case bucketEnd = "bucket_end"
+        case totalSessionsCount = "total_sessions_count"
+        case unhandledSessionsCount = "unhandled_sessions_count"
+        case unhandledRate = "unhandled_rate"
+        case usersSeen = "users_seen"
+        case usersWithUnhandled = "users_with_unhandled"
+        case unhandledUserRate = "unhandled_user_rate"
     }
 }
