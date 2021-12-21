@@ -11,12 +11,33 @@ import SwiftUI
 public struct OverviewView: View {
     @Binding var activeProject: ActiveProject?
     @State var projectOverview: BSGProjectOverview?
+    @State var projectStability: BSGProjectStability?
     
     public init(activeProject: Binding<ActiveProject?>) {
         _activeProject = activeProject
     }
     
     func refreshOverview() {
+        refreshStability()
+        refreshProjectOverview()
+    }
+    
+    func refreshStability() {
+        if let project = activeProject {
+            getProjectStability(token: myToken, project: project.details) {
+                switch $0 {
+                case let .success(rtnProjectStability):
+                    projectStability = rtnProjectStability
+                    print("getProjectStability Success")
+                case let .failure(error):
+                    projectStability = nil
+                    print("getProjectStability Failed: \(error)")
+                }
+            }
+        }
+    }
+    
+    func refreshProjectOverview() {
         if let project = activeProject {
             getProjectOverview(token: myToken, project: project.details, completionHandler: {
                 switch $0 {
@@ -24,6 +45,7 @@ public struct OverviewView: View {
                     projectOverview = rtnProjectOverview
                     print("getProjectOverview Success")
                 case let .failure(error):
+                    projectOverview = nil
                     print("getProjectOverview Failed: \(error)")
                 }
             })
@@ -31,15 +53,21 @@ public struct OverviewView: View {
     }
     
     public var body: some View {
+        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "<Select Project>"
         VStack(alignment: .leading, spacing: 0) {
             NavigationView {
                 VStack(alignment: .leading) {
                     List {
                         if let overview = projectOverview {
-                            Section(header: Text("Project Information")) {
+                            Section(header: Text("Information")) {
                                 VStack(alignment: .leading) {
                                     Text("id").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
                                     Text(overview.projectID)
+                                }
+                            }
+                            if let stability = projectStability {
+                                Section(header: Text("Stability")) {
+                                    ProjectStabilityView(stabilityToRender: stability)
                                 }
                             }
                             Section(header: Text("Errors For Review")) {
@@ -72,7 +100,7 @@ public struct OverviewView: View {
                                 }
                             }
                         } else {
-                            Text("No overview information available")
+                            Text("No overview information available, select a project first.")
                                 .foregroundColor(Color.secondary)
                         }
                     }
@@ -84,8 +112,27 @@ public struct OverviewView: View {
                         refreshOverview()
                     }
                 }
-                .navigationTitle("Overview")
+                .navigationTitle(navigationTitle)
             }
+        }
+    }
+}
+
+struct ProjectStabilityView: View {
+    @State var stability: BSGProjectStability
+
+    init(stabilityToRender: BSGProjectStability) {
+        self.stability = stabilityToRender
+    }
+    
+    var body: some View {
+        KeyValueRow(key: "primary release stage", value: stability.releaseStageName)
+        ForEach(stability.timelinePoints, id: \.bucketStart) { timelinePoint in
+            let sessionStability: Double = ((1 - timelinePoint.unhandledRate) * 1000).rounded() / 10
+            let userStability: Double = ((1 - timelinePoint.unhandledUserRate) * 1000).rounded() / 10
+            KeyValueRow(key: friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: timelinePoint.bucketStart,
+                                                            lastSeenIso8601Timestamp: timelinePoint.bucketEnd),
+                        value: "S \(String(sessionStability))%, U \(String(userStability))%")
         }
     }
 }
