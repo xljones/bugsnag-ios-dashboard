@@ -15,7 +15,7 @@ public struct ProjectSelectorView: View {
     @Binding private var myOrganization: BSGOrganization?
     @Binding private var activeProject: ActiveProject?
     
-    public init(myProjects: Binding<[BSGProject]?>,
+    init(myProjects: Binding<[BSGProject]?>,
                 myOrganization: Binding<BSGOrganization?>,
                 activeProject: Binding<ActiveProject?>) {
         _myProjects = myProjects
