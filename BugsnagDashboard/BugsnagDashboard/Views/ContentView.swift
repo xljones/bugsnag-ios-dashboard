@@ -15,7 +15,7 @@ struct ContentView: View {
     @State private var myOrganization: BSGOrganization?
     @State private var myProjects: [BSGProject]?
     @State private var activeProject: ActiveProject?
-    
+
     public init() {
     }
     
@@ -126,22 +126,6 @@ struct HeaderView: View {
         .sheet(isPresented: $showingProjectSelectorView) {
             ProjectSelectorView(myProjects: $myProjects, myOrganization: $myOrganization, activeProject: $activeProject)
         }
-    }
-}
-
-public struct SheetTitle: View {
-    var theTitle: String
-    
-    public init(title: String) {
-        theTitle = title
-    }
-    
-    public var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            Text(theTitle)
-                .font(.title)
-        }.padding(20)
-        Divider()
     }
 }
 
