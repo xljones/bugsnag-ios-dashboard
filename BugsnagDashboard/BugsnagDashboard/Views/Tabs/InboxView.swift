@@ -16,6 +16,10 @@ public struct InboxView: View {
         _activeProject = activeProject
     }
     
+    func refreshInbox() {
+        refreshLatestErrors()
+    }
+    
     func refreshLatestErrors() {
         if let project = activeProject {
             getErrors(token: myToken, project: project.details) {
@@ -32,8 +36,9 @@ public struct InboxView: View {
     }
     
     public var body: some View {
+        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "<Select Project>"
+        
         VStack(alignment: .leading, spacing: 0) {
-            //MyTabTitle(activeProject: $activeProject, title: "Inbox")
             NavigationView {
                 List {
                     if let errs = latestErrors {
@@ -55,13 +60,13 @@ public struct InboxView: View {
                 }
                 .listStyle(GroupedListStyle())
                 .refreshable {
-                    refreshLatestErrors()
+                    refreshInbox()
                 }
-                .navigationTitle("Latest errors")
+                .navigationTitle(navigationTitle)
             }
             .frame(alignment: .top)
             .onAppear {
-                refreshLatestErrors()
+                refreshInbox()
             }
         }
     }
@@ -73,17 +78,6 @@ struct ErrorTableRow: View {
     init(errorToRender: BSGError) {
         err = errorToRender
         print(err.releaseStages)
-    }
-    
-    func friendlyFirstLastSeenTimestamp(firstSeen: String, lastSeen: String) -> String {
-        let firstSeenRelative = getRelativeTimestamp(iso8601Timestamp: firstSeen)
-        let lastSeenRelative = getRelativeTimestamp(iso8601Timestamp: lastSeen)
-        
-        if firstSeenRelative == lastSeenRelative {
-            return "about " + lastSeenRelative
-        } else {
-            return "about " + lastSeenRelative + " – " + firstSeenRelative
-        }
     }
     
     func getSeverityColor(severity: String) -> Color {
@@ -148,7 +142,8 @@ struct ErrorTableRow: View {
                     .foregroundColor(Color.secondary)
                     .frame( height:11)
                     .truncationMode(.tail)
-                Text(friendlyFirstLastSeenTimestamp(firstSeen: err.firstSeen, lastSeen: err.lastSeen))
+                Text(friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: err.firstSeen,
+                                                    lastSeenIso8601Timestamp: err.lastSeen))
                     .font(.system(size:11))
                     .foregroundColor(Color.tertiaryLabel)
                     .frame( height:11)
@@ -210,23 +205,6 @@ struct LinkedIssueRow: View {
     
     var body: some View {
         Text("Linked issue \(linkedIssue.id)")
-    }
-}
-
-struct KeyValueRow: View {
-    var key: String
-    var value: String
-    
-    init(key: String, value: String) {
-        self.key = key
-        self.value = value
-    }
-    
-    var body: some View {
-        VStack(alignment: .leading) {
-            Text(self.key).foregroundColor(Color.tertiaryLabel).font(.system(size:10))
-            Text(self.value)
-        }
     }
 }
 
