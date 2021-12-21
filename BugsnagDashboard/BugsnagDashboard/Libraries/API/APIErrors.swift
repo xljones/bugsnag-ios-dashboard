@@ -25,7 +25,7 @@ public func getErrors(token: BSGToken,
             do {
                 // failed to map the returned JSON to the expected type, so inspect the payload
                 let returnedJson = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                print(returnedJson)
+                print(returnedJson as Any)
                 completionHandler(.failure(error))
             } catch {
                 completionHandler(.failure(error))
