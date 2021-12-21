@@ -15,13 +15,29 @@ public struct TimelineView: View {
         _activeProject = activeProject
     }
     
+    func refreshTimeline() {
+        if let _ = activeProject {
+            // refresh timeline here.
+        }
+    }
+    
     public var body: some View {
+        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "<Select Project>"
+
         VStack(alignment: .leading, spacing: 0) {
             NavigationView {
                 List {
-                    
+                    Text("Not implemented yet :-(")
+                        .foregroundColor(Color.secondary)
                 }
-                .navigationTitle("Timeline")
+                .refreshable {
+                    refreshTimeline()
+                }
+                .listStyle(GroupedListStyle())
+                .onAppear {
+                    refreshTimeline()
+                }
+                .navigationTitle(navigationTitle)
             }
         }
     }

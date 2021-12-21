@@ -17,17 +17,19 @@ public struct ReleasesView: View {
     }
     
     func refreshReleases() {
-        if let project = activeProject {
+        if let _ = activeProject {
             // refresh releases here.
         }
     }
     
     public var body: some View {
+        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "<Select Project>"
+        
         VStack(alignment: .leading, spacing: 0) {
             NavigationView {
                 VStack(alignment: .leading) {
                     List {
-                        Text("No release information available")
+                        Text("Not implemented yet :-(")
                             .foregroundColor(Color.secondary)
                     }
                     .refreshable {
@@ -38,7 +40,7 @@ public struct ReleasesView: View {
                         refreshReleases()
                     }
                 }
-                .navigationTitle("Releases")
+                .navigationTitle(navigationTitle)
             }
         }
     }
