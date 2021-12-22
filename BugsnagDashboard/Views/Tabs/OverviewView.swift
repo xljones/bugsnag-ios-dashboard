@@ -208,18 +208,16 @@ struct SessionStabilityChartView: View {
     
     private func drawPoints() -> some View {
         GeometryReader { geo in
-            Path { path in
-                let scale = geo.size.height / maxStabilityValue
-                ForEach(stabilityPlot.indices) { index in
-                    Circle()
-                        .stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round, miterLimit: 80, dash: [], dashPhase: 0))
-                        .frame(width: 5, height: 5, alignment: .center)
-                        .foregroundColor(colorScheme == .light ? BSGPrimaryColors.indigo : BSGSecondaryColors.coral)
-                        .background(Color.white)
-                        .cornerRadius(5)
-                        .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(index)),
-                                y: (geo.size.height - (stabilityPlot[index] * scale)) - 5)
-                }
+            let circleDiameter: CGFloat = 8
+            let scale: CGFloat = geo.size.height / maxStabilityValue
+            ForEach(stabilityPlot.indices, id: \.self) { index in
+                Circle()
+                    .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round, miterLimit: 80, dash: [], dashPhase: 0))
+                    .frame(width: circleDiameter, height: circleDiameter, alignment: .center)
+                    .foregroundColor(colorScheme == .light ? BSGPrimaryColors.indigo : BSGSecondaryColors.coral)
+                    .background(Color.white)
+                    .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(index) - (circleDiameter/2)),
+                            y: (geo.size.height - (stabilityPlot[index] * scale)) - (circleDiameter/2))
             }
         }
     }
