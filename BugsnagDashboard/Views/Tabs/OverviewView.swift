@@ -100,7 +100,7 @@ public struct OverviewView: View {
                                 }
                             }
                         } else {
-                            Text("No overview information available, select a project first.")
+                            Text("No overview available, select a project first.")
                                 .foregroundColor(Color.secondary)
                         }
                     }
@@ -127,12 +127,100 @@ struct ProjectStabilityView: View {
     
     var body: some View {
         KeyValueRow(key: "primary release stage", value: stability.releaseStageName)
-        ForEach(stability.timelinePoints, id: \.bucketStart) { timelinePoint in
-            let sessionStability: Double = ((1 - timelinePoint.unhandledRate) * 1000).rounded() / 10
-            let userStability: Double = ((1 - timelinePoint.unhandledUserRate) * 1000).rounded() / 10
-            KeyValueRow(key: friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: timelinePoint.bucketStart,
-                                                            lastSeenIso8601Timestamp: timelinePoint.bucketEnd),
-                        value: "S \(String(sessionStability))%, U \(String(userStability))%")
+        SessionStabilityChartView(timelinePointsToRender: stability.timelinePoints)
+//        ForEach(stability.timelinePoints, id: \.bucketStart) { timelinePoint in
+//            let sessionStability: Double = ((1 - timelinePoint.unhandledRate) * 1000).rounded() / 10
+//            let userStability: Double = ((1 - timelinePoint.unhandledUserRate) * 1000).rounded() / 10
+//            KeyValueRow(key: friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: timelinePoint.bucketStart,
+//                                                            lastSeenIso8601Timestamp: timelinePoint.bucketEnd),
+//                        value: "S \(String(sessionStability))%, U \(String(userStability))%")
+//        }
+    }
+}
+
+struct SessionStabilityChartView: View {
+    @Environment(\.colorScheme) var colorScheme
+    //@Binding var selectedIndex: Int
+    
+    private var stabilityPlot: [CGFloat] = []
+    private var minStabilityValue: CGFloat = 0
+    private var maxStabilityValue: CGFloat = 100
+    
+    public init(timelinePointsToRender: [BSGProjectStabilityTimelinePoint]) {
+                //selectedIndex: Binding<Int>
+        timelinePointsToRender.enumerated().forEach() { index, timelinePoint in
+            let sessionStability: CGFloat = ((1 - timelinePoint.unhandledRate) * 1000).rounded() / 10
+            stabilityPlot.append(sessionStability)
+        }
+        minStabilityValue = stabilityPlot.reduce(0, { currentMin, point in
+            min(currentMin, point)
+        })
+        maxStabilityValue = stabilityPlot.reduce(0, { currentMax, point in
+            max(currentMax, point)
+        })
+        //self._selectedIndex = selectedIndex
+    }
+    
+    var body: some View {
+        ZStack() {
+            drawGrid()
+                .opacity(0.2)
+            .overlay(drawChart())
+            .overlay(drawPoints())
+                //.overlay(addUserInteraction(logs: logs))
+        }
+    }
+    
+    private func calcMinMaxValues() {
+
+    }
+    
+    private func drawGrid() -> some View {
+        VStack(spacing: 0) {
+            Color.primary.frame(height: 1, alignment: .center)
+            HStack(spacing: 0) {
+                ForEach(0..<stabilityPlot.count) { _ in
+                    Color.primary.frame(width: 1, height: 150, alignment: .center)
+                    Spacer()
+                }
+                Color.primary.frame(width: 1, height: 150, alignment: .center)
+            }
+            Color.primary.frame(height: 1, alignment: .center)
+        }
+    }
+    
+    private func drawChart() -> some View {
+        GeometryReader { geo in
+            Path { path in
+                let scale = geo.size.height / maxStabilityValue
+                path.move(to: CGPoint(x: 0, y: geo.size.height - (CGFloat(stabilityPlot[0] * scale))))
+                stabilityPlot.enumerated().forEach() { index, point in
+                    if index != 0 {
+                        path.addLine(to: CGPoint(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(index)),
+                                                 y: geo.size.height - (point * scale)))
+                    }
+                }
+            }
+            .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round, miterLimit: 80, dash: [], dashPhase: 0))
+            .foregroundColor(colorScheme == .light ? BSGPrimaryColors.indigo : BSGSecondaryColors.coral)
+        }
+    }
+    
+    private func drawPoints() -> some View {
+        GeometryReader { geo in
+            Path { path in
+                let scale = geo.size.height / maxStabilityValue
+                ForEach(stabilityPlot.indices) { index in
+                    Circle()
+                        .stroke(style: StrokeStyle(lineWidth: 4, lineCap: .round, lineJoin: .round, miterLimit: 80, dash: [], dashPhase: 0))
+                        .frame(width: 5, height: 5, alignment: .center)
+                        .foregroundColor(colorScheme == .light ? BSGPrimaryColors.indigo : BSGSecondaryColors.coral)
+                        .background(Color.white)
+                        .cornerRadius(5)
+                        .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(index)),
+                                y: (geo.size.height - (stabilityPlot[index] * scale)) - 5)
+                }
+            }
         }
     }
 }
