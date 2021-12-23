@@ -119,35 +119,44 @@ public struct OverviewView: View {
 }
 
 struct ProjectStabilityView: View {
-    @State var stability: BSGProjectStability
+    private var stability: BSGProjectStability
+    
+    @State private var selectedIndex: Int
 
     init(stabilityToRender: BSGProjectStability) {
         self.stability = stabilityToRender
+        self.selectedIndex = stabilityToRender.timelinePoints.count - 1
     }
     
     var body: some View {
         KeyValueRow(key: "primary release stage", value: stability.releaseStageName)
-        SessionStabilityChartView(timelinePointsToRender: stability.timelinePoints)
-//        ForEach(stability.timelinePoints, id: \.bucketStart) { timelinePoint in
-//            let sessionStability: Double = ((1 - timelinePoint.unhandledRate) * 1000).rounded() / 10
-//            let userStability: Double = ((1 - timelinePoint.unhandledUserRate) * 1000).rounded() / 10
-//            KeyValueRow(key: friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: timelinePoint.bucketStart,
-//                                                            lastSeenIso8601Timestamp: timelinePoint.bucketEnd),
-//                        value: "S \(String(sessionStability))%, U \(String(userStability))%")
-//        }
+        SessionStabilityChartView(timelinePointsToRender: stability.timelinePoints,
+                                  selectedIndex: $selectedIndex)
+        KeyValueRow(key: "index", value: String(selectedIndex))
     }
 }
 
 struct SessionStabilityChartView: View {
     @Environment(\.colorScheme) var colorScheme
-    //@Binding var selectedIndex: Int
+    
+    @Binding private var selectedIndex: Int
+    
+    @State var selectedXPos: CGFloat = 8 // User X touch location
+    @State var selectedYPos: CGFloat = 0 // User Y touch location
+    @State var isSelected: Bool = false // Is the user touching the graph
     
     private var stabilityPlot: [CGFloat] = []
     private var minStabilityValue: CGFloat = 0
     private var maxStabilityValue: CGFloat = 100
+    private var minChartHeight: CGFloat = 0
+    private var maxChartHeight: CGFloat = 100
     
-    public init(timelinePointsToRender: [BSGProjectStabilityTimelinePoint]) {
-                //selectedIndex: Binding<Int>
+    public init(timelinePointsToRender: [BSGProjectStabilityTimelinePoint],
+                selectedIndex: Binding<Int>) {
+        /// Apply bindings
+        _selectedIndex = selectedIndex
+        
+        /// Initialize values
         timelinePointsToRender.enumerated().forEach() { index, timelinePoint in
             let sessionStability: CGFloat = ((1 - timelinePoint.unhandledRate) * 1000).rounded() / 10
             stabilityPlot.append(sessionStability)
@@ -158,29 +167,26 @@ struct SessionStabilityChartView: View {
         maxStabilityValue = stabilityPlot.reduce(0, { currentMax, point in
             max(currentMax, point)
         })
-        //self._selectedIndex = selectedIndex
     }
     
     var body: some View {
         ZStack() {
             drawGrid()
                 .opacity(0.2)
-            .overlay(drawChart())
-            .overlay(drawPoints())
-                //.overlay(addUserInteraction(logs: logs))
+                .overlay(drawChart())
+                .overlay(drawPoints())
+                .overlay(userInteraction())
         }
     }
     
-    private func calcMinMaxValues() {
-
-    }
-    
     private func drawGrid() -> some View {
-        VStack(spacing: 0) {
+        let lineWidth: CGFloat = 1
+        
+        return VStack(spacing: 0) {
             Color.primary.frame(height: 1, alignment: .center)
             HStack(spacing: 0) {
-                ForEach(0..<stabilityPlot.count) { _ in
-                    Color.primary.frame(width: 1, height: 150, alignment: .center)
+                ForEach(0..<stabilityPlot.count - 1) { _ in
+                    Color.primary.frame(width: lineWidth, height: 150, alignment: .center)
                     Spacer()
                 }
                 Color.primary.frame(width: 1, height: 150, alignment: .center)
@@ -192,7 +198,7 @@ struct SessionStabilityChartView: View {
     private func drawChart() -> some View {
         GeometryReader { geo in
             Path { path in
-                let scale = geo.size.height / maxStabilityValue
+                let scale = geo.size.height / maxChartHeight
                 path.move(to: CGPoint(x: 0, y: geo.size.height - (CGFloat(stabilityPlot[0] * scale))))
                 stabilityPlot.enumerated().forEach() { index, point in
                     if index != 0 {
@@ -209,7 +215,7 @@ struct SessionStabilityChartView: View {
     private func drawPoints() -> some View {
         GeometryReader { geo in
             let circleDiameter: CGFloat = 8
-            let scale: CGFloat = geo.size.height / maxStabilityValue
+            let scale: CGFloat = geo.size.height / maxChartHeight
             ForEach(stabilityPlot.indices, id: \.self) { index in
                 Circle()
                     .stroke(style: StrokeStyle(lineWidth: 2, lineCap: .round, lineJoin: .round, miterLimit: 80, dash: [], dashPhase: 0))
@@ -219,6 +225,33 @@ struct SessionStabilityChartView: View {
                     .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(index) - (circleDiameter/2)),
                             y: (geo.size.height - (stabilityPlot[index] * scale)) - (circleDiameter/2))
             }
+        }
+    }
+    
+    private func userInteraction() -> some View {
+        GeometryReader { geo in
+            let scale = geo.size.height / maxChartHeight
+            let highlightColor: Color = colorScheme == .light ? BSGSecondaryColors.orchid : BSGSecondaryColors.sunflower
+            let lineWidth: CGFloat = 2
+            let circleDiameter: CGFloat = 12
+            ZStack(alignment: .leading) {
+                Color(highlightColor.cgColor!)
+                    .frame(width: lineWidth)
+                Group {
+                    Circle()
+                        .frame(width: circleDiameter * 2, height: circleDiameter * 2, alignment: .center)
+                        .foregroundColor(Color.black)
+                        .opacity(0.2)
+                        .offset(x: -circleDiameter, y: 0)
+                    Circle()
+                        .frame(width: circleDiameter, height: circleDiameter, alignment: .center)
+                        .foregroundColor(highlightColor)
+                        .offset(x: -(circleDiameter/2), y: 0)
+                }
+                .offset(x: 1, y: -(geo.size.height/2) + (geo.size.height - (stabilityPlot[selectedIndex] * scale)))
+            }
+            .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(selectedIndex)) - (lineWidth / 2), y: 0)
+            .animation(Animation.spring().speed(4))
         }
     }
 }
@@ -235,7 +268,8 @@ struct SessionStabilityChartPreview: PreviewProvider {
     static let testStabilitySampleData = "{\"project_id\":\"5e4a9527ef8b1a000e53bed5\",\"release_stage_name\":\"development\",\"timeline_points\":[{\"bucket_start\":\"2021-11-22T00:00:00.000Z\",\"bucket_end\":\"2021-11-23T00:00:00.000Z\",\"total_sessions_count\":100,\"unhandled_sessions_count\":1,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-23T00:00:00.000Z\",\"bucket_end\":\"2021-11-24T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.12,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-24T00:00:00.000Z\",\"bucket_end\":\"2021-11-25T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.05,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-25T00:00:00.000Z\",\"bucket_end\":\"2021-11-26T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-26T00:00:00.000Z\",\"bucket_end\":\"2021-11-27T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-27T00:00:00.000Z\",\"bucket_end\":\"2021-11-28T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-28T00:00:00.000Z\",\"bucket_end\":\"2021-11-29T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-29T00:00:00.000Z\",\"bucket_end\":\"2021-11-30T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.2,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-11-30T00:00:00.000Z\",\"bucket_end\":\"2021-12-01T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-01T00:00:00.000Z\",\"bucket_end\":\"2021-12-02T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-02T00:00:00.000Z\",\"bucket_end\":\"2021-12-03T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.3,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-03T00:00:00.000Z\",\"bucket_end\":\"2021-12-04T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-04T00:00:00.000Z\",\"bucket_end\":\"2021-12-05T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-05T00:00:00.000Z\",\"bucket_end\":\"2021-12-06T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.25,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-06T00:00:00.000Z\",\"bucket_end\":\"2021-12-07T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-07T00:00:00.000Z\",\"bucket_end\":\"2021-12-08T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-08T00:00:00.000Z\",\"bucket_end\":\"2021-12-09T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-09T00:00:00.000Z\",\"bucket_end\":\"2021-12-10T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-10T00:00:00.000Z\",\"bucket_end\":\"2021-12-11T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-11T00:00:00.000Z\",\"bucket_end\":\"2021-12-12T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.22,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-12T00:00:00.000Z\",\"bucket_end\":\"2021-12-13T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.11,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-13T00:00:00.000Z\",\"bucket_end\":\"2021-12-14T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.12,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-14T00:00:00.000Z\",\"bucket_end\":\"2021-12-15T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.13,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-15T00:00:00.000Z\",\"bucket_end\":\"2021-12-16T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-16T00:00:00.000Z\",\"bucket_end\":\"2021-12-17T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.13,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-17T00:00:00.000Z\",\"bucket_end\":\"2021-12-18T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-18T00:00:00.000Z\",\"bucket_end\":\"2021-12-19T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.08,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-19T00:00:00.000Z\",\"bucket_end\":\"2021-12-20T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.07,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-20T00:00:00.000Z\",\"bucket_end\":\"2021-12-21T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.1,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0},{\"bucket_start\":\"2021-12-21T00:00:00.000Z\",\"bucket_end\":\"2021-12-22T00:00:00.000Z\",\"total_sessions_count\":0,\"unhandled_sessions_count\":0,\"unhandled_rate\":0.2,\"users_seen\":0,\"users_with_unhandled\":0,\"unhandled_user_rate\":0}]}"
         .data(using: .utf8)
     static let sampleStabilityData = try? JSONDecoder().decode(BSGProjectStability.self, from: testStabilitySampleData!)
+    @State static var testSelectedIndex: Int = 10
     static var previews: some View {
-        SessionStabilityChartView(timelinePointsToRender: sampleStabilityData!.timelinePoints)
+        SessionStabilityChartView(timelinePointsToRender: sampleStabilityData!.timelinePoints, selectedIndex: $testSelectedIndex)
     }
 }
