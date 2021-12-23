@@ -253,7 +253,7 @@ struct StabilityChartView: View {
                     .offset(x: 1, y: -(geo.size.height/2) + (geo.size.height - (stabilityPlot[selectedIndex] * scale)))
                 }
                 .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(selectedIndex)) - (lineWidth / 2), y: 0)
-                .animation(Animation.spring(), value: 4)
+                .animation(Animation.spring().speed(3), value: selectedIndex)
                 
                 Color.white.opacity(0.01)
                     .gesture(
