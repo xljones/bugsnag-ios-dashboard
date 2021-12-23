@@ -6,7 +6,9 @@
 //
 
 import Foundation
+import Bugsnag
 
+// MARK: - Mathematical helpers
 /// Function to convert an integer to a compressed 1,000 (k) or 1,000,000 (M) value
 /// and round it to one decimal place.
 public func applyCondensedUnits(value: Int) -> String {
@@ -21,6 +23,8 @@ public func applyCondensedUnits(value: Int) -> String {
         return String(value)
     }
 }
+
+// MARK: - Date / Time helpers
 
 /// Given an ISO8601 Timestamp, it converts this to a user friendly string relative to the current time/date
 // TODO: - Update this to work relative to the users timezone. Does the ISO8601Formatter() already take care of this?
@@ -72,4 +76,12 @@ public func friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: String, la
 /// Caculates stability as a % to 1 decimal place given a user or session unhandled rate.
 public func calcStabilityPercentage(unhandledRate: Double) -> Double {
     return ((1 - unhandledRate) * 1000).rounded() / 10
+}
+
+// MARK: - Logging
+public func logMessage(message: String, addAsBugsnagBreadcrumb: Bool) {
+    NSLog(message)
+    if addAsBugsnagBreadcrumb {
+        Bugsnag.leaveBreadcrumb(withMessage: message)
+    }
 }

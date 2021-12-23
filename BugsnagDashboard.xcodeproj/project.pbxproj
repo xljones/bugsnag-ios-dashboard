@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -16,6 +16,8 @@
 		37203ECB276B7CC1004A6D9C /* APIErrors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37203ECA276B7CC1004A6D9C /* APIErrors.swift */; };
 		375C9350277143E900FA3362 /* CommonViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375C934F277143E900FA3362 /* CommonViews.swift */; };
 		375C9355277153CF00FA3362 /* APIReleases.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375C9354277153CF00FA3362 /* APIReleases.swift */; };
+		3763D6ED2774DE500076CA59 /* Bugsnag in Frameworks */ = {isa = PBXBuildFile; productRef = 3763D6EC2774DE500076CA59 /* Bugsnag */; };
+		3763D6EF2774DE500076CA59 /* BugsnagNetworkRequestPlugin in Frameworks */ = {isa = PBXBuildFile; productRef = 3763D6EE2774DE500076CA59 /* BugsnagNetworkRequestPlugin */; };
 		376A7C10276A04590093712E /* APIUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376A7C0F276A04590093712E /* APIUser.swift */; };
 		376A7C16276A12E40093712E /* APIProjects.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376A7C15276A12E40093712E /* APIProjects.swift */; };
 		376A7C18276A13590093712E /* StructProject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376A7C17276A13590093712E /* StructProject.swift */; };
@@ -62,6 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				3763D6EF2774DE500076CA59 /* BugsnagNetworkRequestPlugin in Frameworks */,
+				3763D6ED2774DE500076CA59 /* Bugsnag in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -186,6 +190,10 @@
 			dependencies = (
 			);
 			name = BugsnagDashboard;
+			packageProductDependencies = (
+				3763D6EC2774DE500076CA59 /* Bugsnag */,
+				3763D6EE2774DE500076CA59 /* BugsnagNetworkRequestPlugin */,
+			);
 			productName = BugsnagDashboard;
 			productReference = 3799CBF426B2F0A3005ACCFD /* BugsnagDashboard.app */;
 			productType = "com.apple.product-type.application";
@@ -213,6 +221,9 @@
 				Base,
 			);
 			mainGroup = 3799CBEB26B2F0A3005ACCFD;
+			packageReferences = (
+				3763D6EB2774DE500076CA59 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */,
+			);
 			productRefGroup = 3799CBF526B2F0A3005ACCFD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -452,6 +463,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		3763D6EB2774DE500076CA59 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/bugsnag/bugsnag-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		3763D6EC2774DE500076CA59 /* Bugsnag */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3763D6EB2774DE500076CA59 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */;
+			productName = Bugsnag;
+		};
+		3763D6EE2774DE500076CA59 /* BugsnagNetworkRequestPlugin */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3763D6EB2774DE500076CA59 /* XCRemoteSwiftPackageReference "bugsnag-cocoa" */;
+			productName = BugsnagNetworkRequestPlugin;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 3799CBEC26B2F0A3005ACCFD /* Project object */;
 }
