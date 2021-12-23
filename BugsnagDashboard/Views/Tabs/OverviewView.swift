@@ -132,7 +132,8 @@ struct ProjectStabilityView: View {
         KeyValueRow(key: "primary release stage", value: stability.releaseStageName)
         SessionStabilityChartView(timelinePointsToRender: stability.timelinePoints,
                                   selectedIndex: $selectedIndex)
-        KeyValueRow(key: "index", value: String(selectedIndex))
+        KeyValueRow(key: "", value: stability.timelinePoints[selectedIndex].bucketStart)
+        KeyValueRow(key: "session stability", value: String("\(calcStabilityPercentage(unhandledRate: stability.timelinePoints[selectedIndex].unhandledRate))%"))
     }
 }
 
@@ -158,7 +159,7 @@ struct SessionStabilityChartView: View {
         
         /// Initialize values
         timelinePointsToRender.enumerated().forEach() { index, timelinePoint in
-            let sessionStability: CGFloat = ((1 - timelinePoint.unhandledRate) * 1000).rounded() / 10
+            let sessionStability: CGFloat = calcStabilityPercentage(unhandledRate: timelinePoint.unhandledRate)
             stabilityPlot.append(sessionStability)
         }
         minStabilityValue = stabilityPlot.reduce(0, { currentMin, point in
@@ -174,9 +175,11 @@ struct SessionStabilityChartView: View {
             drawGrid()
                 .opacity(0.2)
                 .overlay(drawChart())
+                //.overlay(drawTargetStability())
                 .overlay(drawPoints())
                 .overlay(userInteraction())
         }
+        .padding(.top, 10)
     }
     
     private func drawGrid() -> some View {
@@ -214,7 +217,7 @@ struct SessionStabilityChartView: View {
     
     private func drawPoints() -> some View {
         GeometryReader { geo in
-            let circleDiameter: CGFloat = 8
+            let circleDiameter: CGFloat = 4
             let scale: CGFloat = geo.size.height / maxChartHeight
             ForEach(stabilityPlot.indices, id: \.self) { index in
                 Circle()
@@ -231,27 +234,47 @@ struct SessionStabilityChartView: View {
     private func userInteraction() -> some View {
         GeometryReader { geo in
             let scale = geo.size.height / maxChartHeight
-            let highlightColor: Color = colorScheme == .light ? BSGSecondaryColors.orchid : BSGSecondaryColors.sunflower
+            let highlightColor: Color = colorScheme == .light ? BSGSecondaryColors.orchid : BSGSecondaryColors.orchid
             let lineWidth: CGFloat = 2
             let circleDiameter: CGFloat = 12
             ZStack(alignment: .leading) {
-                Color(highlightColor.cgColor!)
-                    .frame(width: lineWidth)
                 Group {
-                    Circle()
-                        .frame(width: circleDiameter * 2, height: circleDiameter * 2, alignment: .center)
-                        .foregroundColor(Color.black)
-                        .opacity(0.2)
-                        .offset(x: -circleDiameter, y: 0)
-                    Circle()
-                        .frame(width: circleDiameter, height: circleDiameter, alignment: .center)
-                        .foregroundColor(highlightColor)
-                        .offset(x: -(circleDiameter/2), y: 0)
+                    Color(highlightColor.cgColor!)
+                        .frame(width: lineWidth)
+                    Group {
+                        Circle()
+                            .frame(width: circleDiameter * 2, height: circleDiameter * 2, alignment: .center)
+                            .foregroundColor(Color.primary)
+                            .opacity(0.2)
+                            .offset(x: -circleDiameter, y: 0)
+                        Circle()
+                            .frame(width: circleDiameter, height: circleDiameter, alignment: .center)
+                            .foregroundColor(highlightColor)
+                            .offset(x: -(circleDiameter/2), y: 0)
+                    }
+                    .offset(x: 1, y: -(geo.size.height/2) + (geo.size.height - (stabilityPlot[selectedIndex] * scale)))
                 }
-                .offset(x: 1, y: -(geo.size.height/2) + (geo.size.height - (stabilityPlot[selectedIndex] * scale)))
+                .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(selectedIndex)) - (lineWidth / 2), y: 0)
+                .animation(Animation.spring(), value: 4)
+                
+                Color.white.opacity(0.01)
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onChanged { touch in
+                                let xPos = touch.location.x
+                                self.isSelected = true
+                                let index = xPos / (geo.size.width / CGFloat(stabilityPlot.count))
+
+                                if index > 0 && index < CGFloat(stabilityPlot.count) {
+                                    self.selectedIndex = Int(index)
+                                }
+                                
+                            }
+                            .onEnded { touch in
+                                self.isSelected = false
+                            }
+                    )
             }
-            .offset(x: (geo.size.width / CGFloat(stabilityPlot.count - 1) * CGFloat(selectedIndex)) - (lineWidth / 2), y: 0)
-            .animation(Animation.spring().speed(4))
         }
     }
 }

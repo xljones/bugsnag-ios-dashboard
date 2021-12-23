@@ -53,3 +53,8 @@ public func friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: String, la
         return "about " + lastSeenRelative + " – " + firstSeenRelative
     }
 }
+
+/// Caculates stability as a % to 1 decimal place given a user or session unhandled rate.
+public func calcStabilityPercentage(unhandledRate: Double) -> Double {
+    return ((1 - unhandledRate) * 1000).rounded() / 10
+}
