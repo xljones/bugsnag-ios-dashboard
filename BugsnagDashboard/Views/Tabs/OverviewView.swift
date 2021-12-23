@@ -60,9 +60,8 @@ public struct OverviewView: View {
                     List {
                         if let overview = projectOverview, let project = self.activeProject {
                             Section(header: Text("Information")) {
-                                KeyValueRow(key: "id-overview", value: overview.projectID)
-                                KeyValueRow(key: "id-project", value: project.details.id)
-                                KeyValueRow(key: "name", value: project.details.name)
+                                KeyValueRow(key: "id", value: project.details.id)
+                                KeyValueRow(key: "slug", value: project.details.slug)
                             }
                             if let stability = projectStability {
                                 Section(header: Text("Stability")) {
@@ -75,18 +74,9 @@ public struct OverviewView: View {
                             }
                             Section(header: Text("Latest Release")) {
                                 if let latestRelease = overview.latestRelease {
-                                    VStack(alignment: .leading) {
-                                        Text("release group id").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
-                                        Text(latestRelease.releaseGroupId)
-                                    }
-                                    VStack(alignment: .leading) {
-                                        Text("first release time").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
-                                        Text(latestRelease.firstReleaseTime)
-                                    }
-                                    VStack(alignment: .leading) {
-                                        Text("app version").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
-                                        Text(latestRelease.appVersion)
-                                    }
+                                    KeyValueRow(key: "release group id", value: latestRelease.releaseGroupId)
+                                    KeyValueRow(key: "first release time", value: latestRelease.firstReleaseTime)
+                                    KeyValueRow(key: "app version", value: latestRelease.appVersion)
                                 } else {
                                     Text("No latest release for this project.")
                                         .foregroundColor(Color.secondary)
@@ -279,7 +269,7 @@ struct StabilityChartView: View {
 
 struct OverviewView_Previews: PreviewProvider {
     static var testProject = BSGProject.init(id: "613a095c6e7316000ef78276", organizationID: "6113b207304caa000e308c2a", slug: "test-project", name: "My Test Project", apiKey: "97ef27a04c69ae72307ba2a3b7168b5b", type: "iOS", isFullView: true, releaseStages: ["production", "development"], language: "language", createdAt: "2021-12-01 12:00:00", updatedAt: "2021-12-01 12:00:00", errorsURL: "https://errorsURL.com", eventsURL: "https://eventsURL.com", url: "https://URL.com", htmlURL: "https://htmlURL.com", openErrorCount: 190, forReviewErrorCount: 25, collaboratorsCount: 4, globalGrouping: [], locationGrouping: [], discardedAppVersions: [], discardedErrors: [], customEventFieldsUsed: 2, resolveOnDeploy: false, urlWhitelist: [], ignoreOldBrowsers: false)
-    @State static var testActiveProject: ActiveProject? = ActiveProject.init(index:1, details: testProject)
+    @State static var testActiveProject: ActiveProject? = ActiveProject.init(index: 1, details: testProject)
     static var previews: some View {
         OverviewView(activeProject: $testActiveProject)
     }
