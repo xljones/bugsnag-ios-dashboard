@@ -11,7 +11,7 @@ import Foundation
 public func getProjects(token: BSGToken,
                         organization: BSGOrganization,
                         completionHandler: @escaping (Result<[BSGProject], Error>) -> Void) {
-    var request = URLRequest(url: URL(string: "https://api.bugsnag.com/organizations/\(organization.id)/projects")!)
+    var request = URLRequest(url: URL(string: "https://api.bugsnag.com/organizations/\(organization.id)/projects?per_page=100")!)
     request.httpMethod = "GET"
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
     request.addValue("token \(token.getToken())", forHTTPHeaderField: "Authorization")
