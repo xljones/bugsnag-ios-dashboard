@@ -41,7 +41,6 @@
 		37203EC8276B7934004A6D9C /* StructReleases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructReleases.swift; sourceTree = "<group>"; };
 		37203ECA276B7CC1004A6D9C /* APIErrors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIErrors.swift; sourceTree = "<group>"; };
 		375C934F277143E900FA3362 /* CommonViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonViews.swift; sourceTree = "<group>"; };
-		375C93512771474800FA3362 /* BugsnagDashboard.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BugsnagDashboard.entitlements; sourceTree = "<group>"; };
 		375C9354277153CF00FA3362 /* APIReleases.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIReleases.swift; sourceTree = "<group>"; };
 		376A7C0F276A04590093712E /* APIUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIUser.swift; sourceTree = "<group>"; };
 		376A7C15276A12E40093712E /* APIProjects.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIProjects.swift; sourceTree = "<group>"; };
@@ -122,7 +121,6 @@
 		3799CBF626B2F0A3005ACCFD /* BugsnagDashboard */ = {
 			isa = PBXGroup;
 			children = (
-				375C93512771474800FA3362 /* BugsnagDashboard.entitlements */,
 				3799CC0B26B2F135005ACCFD /* DataStructures */,
 				3799CC0826B2F0F0005ACCFD /* Libraries */,
 				3799CC0626B2F0D6005ACCFD /* Views */,
@@ -184,6 +182,7 @@
 				3799CBF026B2F0A3005ACCFD /* Sources */,
 				3799CBF126B2F0A3005ACCFD /* Frameworks */,
 				3799CBF226B2F0A3005ACCFD /* Resources */,
+				3763D6F02774E0580076CA59 /* Upload dSYMs to Bugsnag */,
 			);
 			buildRules = (
 			);
@@ -244,6 +243,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		3763D6F02774E0580076CA59 /* Upload dSYMs to Bugsnag */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Upload dSYMs to Bugsnag";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = "/usr/bin/env ruby";
+			shellScript = "info_plist_path = \"#{ENV[\"BUILT_PRODUCTS_DIR\"]}/#{ENV[\"INFOPLIST_PATH\"]}\"\nplist_buddy_response = `/usr/libexec/PlistBuddy -c \"print :bugsnag:apiKey\" \"#{info_plist_path}\"`\nif $?.success?\n    require 'shellwords'\n    api_key = plist_buddy_response\n    print(\"Uploading dSYMs from '#{ENV[\"DWARF_DSYM_FOLDER_PATH\"]}/*/Contents/Resources/DWARF/*' with API key '#{Shellwords.escape(api_key)}'\")\n    fork do\n        Process.setsid\n\n        Dir[\"#{ENV[\"DWARF_DSYM_FOLDER_PATH\"]}/*/Contents/Resources/DWARF/*\"].each do |dsym|\n            curl_command = \"curl -s --http1.1 -F dsym=@#{Shellwords.escape(dsym)} -F projectRoot=#{Shellwords.escape(ENV[\"PROJECT_DIR\"])} \"\n            curl_command += \"-F apiKey=#{Shellwords.escape(api_key)} \"\n            curl_command += \"https://upload.bugsnag.com/\"\n            print(\"Running system: '#{curl_command}'\")\n            system(curl_command)\n        end\n    end\nelse \n    exit(1)\nend\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3799CBF026B2F0A3005ACCFD /* Sources */ = {
@@ -309,7 +330,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
