@@ -36,12 +36,15 @@ public struct ReleasesView: View {
                         refreshReleases()
                     }
                     .listStyle(GroupedListStyle())
-                    .onAppear {
-                        refreshReleases()
-                    }
                 }
                 .navigationTitle(navigationTitle)
             }
+        }
+        .onAppear {
+            refreshReleases()
+        }
+        .onChange(of: self.activeProject) { _ in
+            refreshReleases()
         }
     }
 }

@@ -34,11 +34,14 @@ public struct TimelineView: View {
                     refreshTimeline()
                 }
                 .listStyle(GroupedListStyle())
-                .onAppear {
-                    refreshTimeline()
-                }
                 .navigationTitle(navigationTitle)
             }
+        }
+        .onAppear {
+            refreshTimeline()
+        }
+        .onChange(of: self.activeProject) { _ in
+            refreshTimeline()
         }
     }
 }

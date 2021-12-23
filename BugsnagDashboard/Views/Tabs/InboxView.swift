@@ -69,6 +69,12 @@ public struct InboxView: View {
                 refreshInbox()
             }
         }
+        .onAppear {
+            refreshInbox()
+        }
+        .onChange(of: self.activeProject) { _ in
+            refreshInbox()
+        }
     }
 }
 

@@ -55,9 +55,15 @@ public struct BSGProject: Codable {
 }
 
 // MARK: - ActiveProject
-public struct ActiveProject {
+public struct ActiveProject: Equatable {
     var index: Int
     var details: BSGProject
+    
+    /// Making this structure equatable by comparing the index allows the strucutre to be used in direct comparisons
+    /// required for use in `onChange` modifiers to check when the user changes from one project to another.
+    public static func ==(lhs: ActiveProject, rhs: ActiveProject) -> Bool {
+        return lhs.index == rhs.index
+    }
 }
 
 // MARK: - BSGProjectOverview

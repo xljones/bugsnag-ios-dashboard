@@ -58,12 +58,11 @@ public struct OverviewView: View {
             NavigationView {
                 VStack(alignment: .leading) {
                     List {
-                        if let overview = projectOverview {
+                        if let overview = projectOverview, let project = self.activeProject {
                             Section(header: Text("Information")) {
-                                VStack(alignment: .leading) {
-                                    Text("id").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
-                                    Text(overview.projectID)
-                                }
+                                KeyValueRow(key: "id-overview", value: overview.projectID)
+                                KeyValueRow(key: "id-project", value: project.details.id)
+                                KeyValueRow(key: "name", value: project.details.name)
                             }
                             if let stability = projectStability {
                                 Section(header: Text("Stability")) {
@@ -71,14 +70,8 @@ public struct OverviewView: View {
                                 }
                             }
                             Section(header: Text("Errors For Review")) {
-                                VStack(alignment: .leading) {
-                                    Text("current").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
-                                    Text(String(overview.forReview.current))
-                                }
-                                VStack(alignment: .leading) {
-                                    Text("one week ago").foregroundColor(Color.tertiaryLabel).font(.system(size:10))
-                                    Text(String(overview.forReview.oneWeekAgo))
-                                }
+                                KeyValueRow(key: "current", value: String(overview.forReview.current))
+                                KeyValueRow(key: "one week ago", value: String(overview.forReview.oneWeekAgo))
                             }
                             Section(header: Text("Latest Release")) {
                                 if let latestRelease = overview.latestRelease {
@@ -108,12 +101,15 @@ public struct OverviewView: View {
                         refreshOverview()
                     }
                     .listStyle(GroupedListStyle())
-                    .onAppear {
-                        refreshOverview()
-                    }
                 }
                 .navigationTitle(navigationTitle)
             }
+        }
+        .onAppear {
+            refreshOverview()
+        }
+        .onChange(of: self.activeProject) { _ in
+            refreshOverview()
         }
     }
 }
