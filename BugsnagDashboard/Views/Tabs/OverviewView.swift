@@ -53,7 +53,7 @@ public struct OverviewView: View {
     }
     
     public var body: some View {
-        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "<Select Project>"
+        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "Overview"
         VStack(alignment: .leading, spacing: 0) {
             NavigationView {
                 VStack(alignment: .leading) {

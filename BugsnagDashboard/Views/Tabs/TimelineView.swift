@@ -22,7 +22,7 @@ public struct TimelineView: View {
     }
     
     public var body: some View {
-        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "<Select Project>"
+        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "Timeline"
 
         VStack(alignment: .leading, spacing: 0) {
             NavigationView {

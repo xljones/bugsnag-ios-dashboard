@@ -36,7 +36,7 @@ public struct InboxView: View {
     }
     
     public var body: some View {
-        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "<Select Project>"
+        let navigationTitle: String = activeProject != nil ? activeProject!.details.name : "Inbox"
         
         VStack(alignment: .leading, spacing: 0) {
             NavigationView {
