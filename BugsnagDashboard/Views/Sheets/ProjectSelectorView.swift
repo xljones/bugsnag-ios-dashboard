@@ -30,7 +30,7 @@ public struct ProjectSelectorView: View {
                 if let projects = myProjects {
                     ForEach(Array(projects.enumerated()), id: \.offset) { index, project in
                         Button(action: {
-                            print("Setting active project ID '\(project.id)', index \(index)")
+                            logMessage(message: "Setting active project ID '\(project.id)', index \(index)")
                             activeProject = ActiveProject.init(index: index, details: project)
                             self.thisView.wrappedValue.dismiss()
                         }) {
@@ -54,19 +54,19 @@ public struct ProjectSelectorView: View {
             .listStyle(GroupedListStyle())
             .background(Color.gray)
             .refreshable {
-                print("Projects: Refresh project list")
+                logMessage(message: "Projects: Refresh project list")
                 if let organization = myOrganization {
                     getProjects(token: myToken, organization: organization) {
                         switch $0 {
                         case let .success(rtnProjects):
                             myProjects = rtnProjects
-                            print("getProjects Success")
+                            logMessage(message: "getProjects Success")
                         case let .failure(error):
-                            print("getProjects Failed: \(error)")
+                            logMessage(message: "getProjects Failed: \(error)")
                         }
                     }
                 } else {
-                    print("Can't referesh projects, myOrganization is nil")
+                    logMessage(message: "Can't referesh projects, myOrganization is nil")
                 }
             }
             Text("Pull to refresh")
@@ -81,9 +81,9 @@ public struct ProjectSelectorView: View {
                         switch $0 {
                         case let .success(rtnProjects):
                             myProjects = rtnProjects
-                            print("getProjects Success (on init)")
+                            logMessage(message: "getProjects Success (on init)")
                         case let .failure(error):
-                            print("getProjects Failed (on init): \(error)")
+                            logMessage(message: "getProjects Failed (on init): \(error)")
                         }
                     }
                 }

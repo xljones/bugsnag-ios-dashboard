@@ -106,7 +106,7 @@ public struct MyAccountView: View {
             VStack() {
                 HStack() {
                     Button(action: {
-                        print("Testing Personal Auth Token")
+                        logMessage(message: "Testing Personal Auth Token")
                         /// reset these objects to nil so failures are more obvious
                         tokenTestState = .CHANGED_AND_UNTESTED
                         testUser = nil
@@ -138,25 +138,25 @@ public struct MyAccountView: View {
                         }
                         switch(tokenTestState) {
                         case .UNCHANGED:
-                            print("Save: Not saving token as unchanged")
+                            logMessage(message: "Save: Not saving token as unchanged")
                             self.thisView.wrappedValue.dismiss()
                         case .CHANGED_AND_TESTED:
-                            print("Save: Changing, token was tested so no further testing")
+                            logMessage(message: "Save: Changing, token was tested so no further testing")
                             myToken.setToken(token: testToken)
                             myUser = testUser
                             myOrganization = testOrganization
                             self.thisView.wrappedValue.dismiss()
                         case .CHANGED_AND_UNTESTED:
-                            print("Save: Performing test before saving")
+                            logMessage(message: "Save: Performing test before saving")
                             getUserAndOrganization(token: BSGToken.init(token: testToken)) { rtnUser, rtnOrganization in
                                 if let user = rtnUser, let organization = rtnOrganization {
                                     myUser = user
                                     myOrganization = organization
                                     myToken.setToken(token: testToken)
-                                    print("Save: --> Test passed")
+                                    logMessage(message: "Save: --> Test passed")
                                     self.thisView.wrappedValue.dismiss()
                                 } else {
-                                    print("Save: --> Test failed")
+                                    logMessage(message: "Save: --> Test failed")
                                 }
                             }
                         }
@@ -173,7 +173,7 @@ public struct MyAccountView: View {
                     }
                 }
                 Button(action: {
-                    print("Cancelling Account update")
+                    logMessage(message: "Cancelling Account update")
                     self.thisView.wrappedValue.dismiss()
                 }) {
                     HStack {

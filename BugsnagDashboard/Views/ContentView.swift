@@ -85,7 +85,6 @@ struct HeaderView: View {
             // A horizontal stack to contain the hamburger, title, and account buttons
             HStack() {
                 Button(action: {
-                    print("Open the project menu")
                     self.showingProjectSelectorView.toggle()
                 }) {
                     Image(systemName: "line.horizontal.3")

@@ -4,6 +4,8 @@
 <dict>
 	<key>bugsnag</key>
 	<dict>
+		<key>maxBreadcrumbs</key>
+		<integer>100</integer>
 		<key>apiKey</key>
 		<string>3cbb56eb67b68428cae55d9817965bcf</string>
 	</dict>

@@ -79,9 +79,11 @@ public func calcStabilityPercentage(unhandledRate: Double) -> Double {
 }
 
 // MARK: - Logging
-public func logMessage(message: String, addAsBugsnagBreadcrumb: Bool) {
-    NSLog(message)
-    if addAsBugsnagBreadcrumb {
-        Bugsnag.leaveBreadcrumb(withMessage: message)
+public func logMessage(message: Any, addAsBugsnagBreadcrumb: Bool = false) {
+    #if DEBUG
+    print(message)
+    #endif
+    if addAsBugsnagBreadcrumb, let messageAsString = message as? String {
+        Bugsnag.leaveBreadcrumb(withMessage: messageAsString)
     }
 }

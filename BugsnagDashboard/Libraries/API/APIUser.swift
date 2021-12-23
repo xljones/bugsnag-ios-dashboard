@@ -21,9 +21,9 @@ func getUserAndOrganization(token: BSGToken,
         switch $0 {
         case let .success(user):
             testUser = user
-            print("Test: getUser Success")
+            logMessage(message: "Test: getUser Success")
         case let .failure(error):
-            print("Test: getUser Failed: \(error)")
+            logMessage(message: "Test: getUser Failed: \(error)")
         }
         group.leave()
     }
@@ -33,9 +33,9 @@ func getUserAndOrganization(token: BSGToken,
         switch $0 {
         case let .success(orgs):
             testOrganization = orgs[0]
-            print("Test: getOrganizations Success")
+            logMessage(message: "Test: getOrganizations Success")
         case let .failure(error):
-            print("Test: getOrganizations Failed: \(error)")
+            logMessage(message: "Test: getOrganizations Failed: \(error)")
         }
         group.leave()
     }

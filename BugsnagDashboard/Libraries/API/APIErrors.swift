@@ -15,7 +15,7 @@ public func getErrors(token: BSGToken,
     request.addValue("application/json", forHTTPHeaderField: "Content-Type")
     request.addValue("token \(token.getToken())", forHTTPHeaderField: "Authorization")
     
-    print("Errors: getting error list with project ID: \(project.id)")
+    logMessage(message: "Errors: getting error list with project ID: \(project.id)")
     URLSession.shared.dataTask(with: request) { data, response, error in
         guard let data = data else { return completionHandler(.failure(error!)) }
         do {
@@ -25,7 +25,7 @@ public func getErrors(token: BSGToken,
             do {
                 // failed to map the returned JSON to the expected type, so inspect the payload
                 let returnedJson = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any]
-                print(returnedJson as Any)
+                logMessage(message: returnedJson as Any)
                 completionHandler(.failure(error))
             } catch {
                 completionHandler(.failure(error))

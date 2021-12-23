@@ -28,10 +28,10 @@ public struct OverviewView: View {
                 switch $0 {
                 case let .success(rtnProjectStability):
                     projectStability = rtnProjectStability
-                    print("getProjectStability Success")
+                    logMessage(message: "getProjectStability Success")
                 case let .failure(error):
                     projectStability = nil
-                    print("getProjectStability Failed: \(error)")
+                    logMessage(message: "getProjectStability Failed: \(error)")
                 }
             }
         }
@@ -43,10 +43,10 @@ public struct OverviewView: View {
                 switch $0 {
                 case let .success(rtnProjectOverview):
                     projectOverview = rtnProjectOverview
-                    print("getProjectOverview Success")
+                    logMessage(message: "getProjectOverview Success")
                 case let .failure(error):
                     projectOverview = nil
-                    print("getProjectOverview Failed: \(error)")
+                    logMessage(message: "getProjectOverview Failed: \(error)")
                 }
             })
         }

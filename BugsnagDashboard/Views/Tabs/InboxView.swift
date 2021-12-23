@@ -26,10 +26,10 @@ public struct InboxView: View {
                 switch $0 {
                 case let .success(rtnErrors):
                     latestErrors = rtnErrors
-                    print(latestErrors as Any)
-                    print("getErrors Success (on appear)")
+                    logMessage(message: latestErrors as Any)
+                    logMessage(message: "getErrors Success (on appear)")
                 case let .failure(error):
-                    print("getProjects Failed (on appear): \(error)")
+                    logMessage(message: "getProjects Failed (on appear): \(error)")
                 }
             }
         }
@@ -83,7 +83,7 @@ struct ErrorTableRow: View {
     
     init(errorToRender: BSGError) {
         err = errorToRender
-        print(err.releaseStages)
+        logMessage(message: err.releaseStages)
     }
     
     func getSeverityColor(severity: String) -> Color {
@@ -100,64 +100,62 @@ struct ErrorTableRow: View {
     }
     
     public var body: some View {
-        Button(action: { print("Selecting error \(err.id)") }) {
-            VStack(alignment: .leading, spacing: 1) {
-                HStack(alignment: .center) {
-                    Text(err.severity.uppercased())
-                        .bold()
+        VStack(alignment: .leading, spacing: 1) {
+            HStack(alignment: .center) {
+                Text(err.severity.uppercased())
+                    .bold()
+                    .font(.system(size:10))
+                    .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
+                    .foregroundColor(Color.white)
+                    .background(getSeverityColor(severity: err.severity))
+                    .cornerRadius(10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(getSeverityColor(severity: err.severity), lineWidth: 1)
+                    )
+                let additionalReleaseStages: String = err.releaseStages.count > 1 ? " + \(err.releaseStages.count - 1)" : ""
+                Text("\(err.releaseStages[0])\(additionalReleaseStages)")
                         .font(.system(size:10))
                         .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
-                        .foregroundColor(Color.white)
-                        .background(getSeverityColor(severity: err.severity))
-                        .cornerRadius(10)
                         .overlay(
                             RoundedRectangle(cornerRadius: 10)
-                                .stroke(getSeverityColor(severity: err.severity), lineWidth: 1)
+                                .stroke(Color.gray, lineWidth: 1)
                         )
-                    let additionalReleaseStages: String = err.releaseStages.count > 1 ? " + \(err.releaseStages.count - 1)" : ""
-                    Text("\(err.releaseStages[0])\(additionalReleaseStages)")
-                            .font(.system(size:10))
-                            .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.gray, lineWidth: 1)
-                            )
-                    Spacer()
-                    HStack() {
-                        Image(systemName: "xmark.octagon")
-                        Text(applyCondensedUnits(value: err.events))
-                            .font(.system(size:10))
-                    }
-                    .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
-                    HStack() {
-                        Image(systemName: "person")
-                        Text(applyCondensedUnits(value: err.users))
-                            .font(.system(size:10))
-                    }
-                    .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
-                }.padding(.bottom, 3)
-                HStack(alignment: .center) {
-                    Text(err.errorClass)
-                        .bold()
-                    Text(err.context)
-                        .frame(height:12)
-                        .truncationMode(.tail)
+                Spacer()
+                HStack() {
+                    Image(systemName: "xmark.octagon")
+                    Text(applyCondensedUnits(value: err.events))
+                        .font(.system(size:10))
                 }
-                Text(err.message)
-                    .font(.system(size:11))
-                    .foregroundColor(Color.secondary)
-                    .frame( height:11)
+                .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
+                HStack() {
+                    Image(systemName: "person")
+                    Text(applyCondensedUnits(value: err.users))
+                        .font(.system(size:10))
+                }
+                .padding(.init(top: 2, leading: 5, bottom: 2, trailing: 5))
+            }.padding(.bottom, 3)
+            HStack(alignment: .center) {
+                Text(err.errorClass)
+                    .bold()
+                Text(err.context)
+                    .frame(height:12)
                     .truncationMode(.tail)
-                Text(friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: err.firstSeen,
-                                                    lastSeenIso8601Timestamp: err.lastSeen))
-                    .font(.system(size:11))
-                    .foregroundColor(Color.tertiaryLabel)
-                    .frame( height:11)
-                    .padding(.top, 3)
             }
-            .font(.system(size:12))
-            .foregroundColor(Color.primary)
+            Text(err.message)
+                .font(.system(size:11))
+                .foregroundColor(Color.secondary)
+                .frame( height:11)
+                .truncationMode(.tail)
+            Text(friendlyFirstLastSeenTimestamp(firstSeenIso8601Timestamp: err.firstSeen,
+                                                lastSeenIso8601Timestamp: err.lastSeen))
+                .font(.system(size:11))
+                .foregroundColor(Color.tertiaryLabel)
+                .frame( height:11)
+                .padding(.top, 3)
         }
+        .font(.system(size:12))
+        .foregroundColor(Color.primary)
     }
 }
 
