@@ -33,8 +33,23 @@ public func getRelativeTimestamp(iso8601Timestamp: String) -> String {
                                            .withColonSeparatorInTime]
     let timestamp = railsIso8601Formatter.date(from: iso8601Timestamp)
     if timestamp != nil {
-        let relativeTimestamp = RelativeDateTimeFormatter().localizedString(for: timestamp!, relativeTo: Date())
-        return relativeTimestamp
+        return RelativeDateTimeFormatter().localizedString(for: timestamp!, relativeTo: Date())
+    } else {
+        return iso8601Timestamp
+    }
+}
+
+public func friendlyDatefromTimestamp(iso8601Timestamp: String) -> String {
+    let railsIso8601Formatter = ISO8601DateFormatter()
+    railsIso8601Formatter.formatOptions = [.withFullDate,
+                                           .withTime,
+                                           .withDashSeparatorInDate,
+                                           .withColonSeparatorInTime]
+    let timestamp = railsIso8601Formatter.date(from: iso8601Timestamp)
+    if timestamp != nil {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "dd MMM, yyyy"
+        return dateFormatter.string(from: timestamp!)
     } else {
         return iso8601Timestamp
     }
