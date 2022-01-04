@@ -54,7 +54,7 @@ public struct InboxView: View {
                             }
                         }
                     } else {
-                        Text("No error information available.")
+                        Text("No error information available. Select a project first.")
                             .foregroundColor(Color.secondary)
                     }
                 }
@@ -231,9 +231,9 @@ struct ErrorTableRow_Previews: PreviewProvider {
 }
 
 struct ErrorView_Previews: PreviewProvider {
-    static let sampleError = "{\"id\": \"618964a1308b00000a0c130b\",\"project_id\": \"5e4a9527ef8b1a000e53bed5\",\"error_class\": \"Fatal error\",\"message\": \"Restarting app to switch endpoints\",\"context\": \"closure #1 in variable initialization expression of ViewController.sections\",\"severity\": \"error\",\"original_severity\": \"error\",\"overridden_severity\": null,\"events\": 5400000,\"events_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b/events\",\"unthrottled_occurrence_count\": 1,\"users\": 3530,\"first_seen\": \"2021-11-08T17:55:45.000Z\",\"last_seen\": \"2021-11-08T17:55:45.000Z\",\"first_seen_unfiltered\": \"2021-11-08T17:55:45.000Z\",\"last_seen_unfiltered\": \"2021-11-08T17:55:45.733Z\",\"status\": \"open\",\"created_issue\": {\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"},\"linked_issues\": [{\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"}],\"reopen_rules\": null,\"assigned_collaborator_id\": null,\"comment_count\": 0,\"missing_dsyms\": [],\"release_stages\": [\"production\", \"development\", \"staging\"],\"grouping_reason\": \"frame-inner\",\"grouping_fields\": {\"file\": \"swift-ios\",\"relativeAddress\": \"0x4ee4\",\"errorClass\": \"Fatal error\"},\"url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b\",\"project_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5\"}"
+    static let sampleErrorData = "{\"id\": \"618964a1308b00000a0c130b\",\"project_id\": \"5e4a9527ef8b1a000e53bed5\",\"error_class\": \"Fatal error\",\"message\": \"Restarting app to switch endpoints\",\"context\": \"closure #1 in variable initialization expression of ViewController.sections\",\"severity\": \"error\",\"original_severity\": \"error\",\"overridden_severity\": null,\"events\": 5400000,\"events_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b/events\",\"unthrottled_occurrence_count\": 1,\"users\": 3530,\"first_seen\": \"2021-11-08T17:55:45.000Z\",\"last_seen\": \"2021-11-08T17:55:45.000Z\",\"first_seen_unfiltered\": \"2021-11-08T17:55:45.000Z\",\"last_seen_unfiltered\": \"2021-11-08T17:55:45.733Z\",\"status\": \"open\",\"created_issue\": {\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"},\"linked_issues\": [{\"id\": \"48180\",\"key\": \"XTP-53\",\"number\": 0,\"type\": \"jira\",\"url\": \"https://bugsnag.atlassian.net/browse/XTP-53\"}],\"reopen_rules\": null,\"assigned_collaborator_id\": null,\"comment_count\": 0,\"missing_dsyms\": [],\"release_stages\": [\"production\", \"development\", \"staging\"],\"grouping_reason\": \"frame-inner\",\"grouping_fields\": {\"file\": \"swift-ios\",\"relativeAddress\": \"0x4ee4\",\"errorClass\": \"Fatal error\"},\"url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5/errors/618964a1308b00000a0c130b\",\"project_url\": \"https://api.bugsnag.com/projects/5e4a9527ef8b1a000e53bed5\"}"
         .data(using: .utf8)
-    static let sampleErrorObject = try? JSONDecoder().decode(BSGError.self, from: sampleError!)
+    static let sampleErrorObject = try? JSONDecoder().decode(BSGError.self, from: sampleErrorData!)
     static var previews: some View {
         ErrorView(errorToRender: sampleErrorObject!)
 .previewInterfaceOrientation(.portrait)
